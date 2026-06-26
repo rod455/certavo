@@ -52,6 +52,8 @@
     "title": "Resultado",
     "dailyTitle": "{site} • Desafio do Dia #{n}",
     "youScored": "Você fez {score} de {total}",
+    "shareText": "Acertei {score}/{total} no {site} — Desafio do Dia #{n}. Consegue fazer melhor?",
+    "shareScore": "Fiz {score} pontos no {site}. Consegue fazer melhor?",
     "shareWhatsapp": "Desafiar amigos no WhatsApp",
     "playAgain": "Jogar outro modo",
     "comeBackTomorrow": "Volte amanhã para um novo desafio.",

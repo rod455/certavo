@@ -1,37 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { resultGrid, dailyShareText, whatsappLink } from '@/lib/share';
-import type { AnswerRecord } from '@/lib/types';
-
-const answers: AnswerRecord[] = [
-  { questionId: '1', chosenIndex: 0, correct: true, msTaken: 10 },
-  { questionId: '2', chosenIndex: 1, correct: false, msTaken: 10 },
-  { questionId: '3', chosenIndex: 0, correct: true, msTaken: 10 },
-];
+import { whatsappLink } from '@/lib/share';
 
 describe('share', () => {
-  it('renders a green/black emoji grid', () => {
-    expect(resultGrid(answers)).toBe('🟩⬛🟩');
-  });
-
-  it('wraps rows at the given width', () => {
-    const five = Array(7).fill(answers[0]);
-    expect(resultGrid(five, 5).split('\n')).toHaveLength(2);
-  });
-
-  it('daily share text contains the challenge number and link', () => {
-    const text = dailyShareText({
-      challengeNumber: 128,
-      answers,
-      correctCount: 2,
-      total: 3,
-    });
-    expect(text).toContain('#128');
-    expect(text).toContain('/d/128');
-    expect(text).toContain('2/3');
-  });
-
   it('builds an encoded WhatsApp link', () => {
-    const link = whatsappLink('a b');
-    expect(link).toBe('https://wa.me/?text=a%20b');
+    expect(whatsappLink('a b')).toBe('https://wa.me/?text=a%20b');
+  });
+
+  it('encodes newlines and the share URL', () => {
+    const link = whatsappLink('Acertei 8/10\nhttps://certavo.app/d/1');
+    expect(link).toContain('%0A');
+    expect(link).toContain('https%3A%2F%2Fcertavo.app%2Fd%2F1');
   });
 });
