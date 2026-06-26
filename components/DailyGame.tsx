@@ -57,7 +57,7 @@ export function DailyGame({
 
   if (status === 'done') {
     return prior ? (
-      <ResultModal result={prior} allowSave={false} />
+      <ResultModal result={prior} />
     ) : (
       <p className="rounded-card border-2 border-navy/15 bg-paper-2 p-6 text-center">
         {t('alreadyPlayed')} {t('comeBackTomorrow')}
