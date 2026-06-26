@@ -10,6 +10,8 @@ import { getNick, setNick } from '@/lib/anon';
 import { isBackendConfigured } from '@/lib/supabase/client';
 import { Link } from '@/i18n/routing';
 
+const WA_GREEN = '#25D366';
+
 function formatDuration(ms: number): string {
   const s = Math.round(ms / 1000);
   if (s < 60) return `${s}s`;
@@ -62,9 +64,7 @@ export function ResultModal({
   const themeLabel = isDaily
     ? (result.challengeName ?? '')
     : (tt(result.themeSlug as never) as string);
-  const title = isDaily
-    ? t('dailyTitle', { site: SITE_NAME, n: result.challengeNumber ?? 0 })
-    : tm(result.mode);
+  const myMetric = isStreak ? result.streak : result.score;
 
   // ----- share message + image -----
   let message: string;
@@ -97,7 +97,6 @@ export function ResultModal({
     `&m=${encodeURIComponent(message)}`;
 
   async function handleWhatsApp() {
-    // Send the result image + link; fall back to a wa.me text link.
     const shared = await tryShareImage(imageUrl, shareText);
     if (!shared) window.open(whatsappLink(shareText), '_blank', 'noopener');
   }
@@ -122,9 +121,10 @@ export function ResultModal({
 
   const loadBoard = useCallback(() => {
     if (!showBackend) return;
-    getLeaderboard(result.mode, PERIOD[result.mode as keyof typeof PERIOD] ?? 'all').then(
-      setRows,
-    );
+    getLeaderboard(
+      result.mode,
+      PERIOD[result.mode as keyof typeof PERIOD] ?? 'all',
+    ).then(setRows);
   }, [showBackend, result.mode]);
   useEffect(() => loadBoard(), [loadBoard]);
 
@@ -142,122 +142,135 @@ export function ResultModal({
 
   const showSave = allowSave && showBackend;
   const top = rows.slice(0, 7);
+  const pct =
+    rows.length > 0
+      ? Math.round(
+          (rows.filter((r) => (isStreak ? (r.streak ?? 0) : r.score) < myMetric)
+            .length /
+            rows.length) *
+            100,
+        )
+      : null;
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={t('title')}
-      className="fixed inset-0 z-50 flex items-end justify-center bg-navy/40 p-4 sm:items-center"
-    >
-      <div className="flex max-h-[92vh] w-full max-w-sm animate-fade-up flex-col gap-4 overflow-y-auto rounded-card border-2 border-navy bg-paper p-6 shadow-tactile">
-        {/* Score block */}
-        <div className="text-center">
-          <h2 className="font-sans text-xl font-bold">{title}</h2>
-          {subLabel && (
-            <p className="font-sans text-sm font-bold text-teal">{subLabel}</p>
-          )}
-          <p className="my-1 font-mono text-6xl font-bold text-teal">{headline}</p>
-        </div>
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4 animate-fade-up">
+      {/* Dark hero: score + percentile + join ranking */}
+      <div className="rounded-card border-2 border-navy bg-navy p-6 text-center text-paper shadow-tactile">
+        <p className="font-mono text-7xl font-bold leading-none text-paper">
+          {headline}
+        </p>
+        {subLabel && (
+          <p className="mt-2 font-mono text-xs uppercase tracking-[0.2em] text-paper/70">
+            {subLabel}
+          </p>
+        )}
+        {pct != null && (
+          <p className="mt-3 font-sans text-sm text-paper/90">
+            {t('beatPercent', { pct })}
+          </p>
+        )}
 
-        {/* Save to ranking */}
         {showSave &&
           (rank != null ? (
-            <p className="rounded-card border-2 border-teal/40 bg-teal/10 p-3 text-center font-sans font-bold text-teal">
+            <p className="mt-4 font-sans text-lg font-bold text-teal-soft">
               🏆 {t('rankPosition', { rank })}
             </p>
           ) : (
-            <div>
-              <label className="text-sm font-bold">{t('saveTitle')}</label>
-              <div className="mt-1 flex gap-2">
+            <div className="mt-4">
+              <div className="flex gap-2">
                 <input
                   value={nick}
                   onChange={(e) => setNickInput(e.target.value)}
                   maxLength={24}
                   placeholder={t('nickPlaceholder')}
-                  className="min-h-[44px] w-full rounded-card border-2 border-navy/20 bg-paper px-3 font-sans"
+                  className="min-h-[44px] w-full rounded-card border-2 border-paper/20 bg-paper/10 px-3 font-sans text-paper placeholder:text-paper/50"
                 />
                 <button
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="btn-primary shrink-0"
+                  className="btn min-h-[44px] shrink-0 border-teal bg-teal font-semibold text-paper disabled:opacity-50"
                 >
                   {saving ? t('saving') : t('save')}
                 </button>
               </div>
               {saveError && (
-                <p className="mt-1 text-sm text-error">{t('rankUnavailable')}</p>
+                <p className="mt-1 text-sm text-paper/80">{t('rankUnavailable')}</p>
               )}
             </div>
           ))}
-
-        {/* Share */}
-        <button type="button" onClick={handleWhatsApp} className="btn-primary w-full">
-          {t('shareWhatsapp')}
-        </button>
-
-        {/* Inline ranking */}
-        {showBackend && top.length > 0 && (
-          <div className="overflow-hidden rounded-card border-2 border-navy/15">
-            <div className="flex items-center justify-between bg-paper-2 px-3 py-2 font-mono text-[11px] uppercase tracking-wide text-navy-soft">
-              <span>
-                {t('rankingLabel')} · {themeLabel}
-              </span>
-              <span>{tm(result.mode)}</span>
-            </div>
-            <ol>
-              {top.map((row) => (
-                <li
-                  key={row.rank}
-                  className="flex items-center justify-between border-t border-navy/10 px-3 py-2"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="w-5 font-mono text-navy-soft">{row.rank}</span>
-                    <span className="font-sans">{row.name ?? '—'}</span>
-                  </span>
-                  <span className="font-mono font-bold text-teal">
-                    {isStreak ? (row.streak ?? 0) : row.score}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
-        {/* Actions */}
-        {isDaily ? (
-          <div className="flex flex-col gap-2">
-            <Link href="/" className="btn-ghost w-full">
-              {t('playAgain')}
-            </Link>
-            <p className="text-center text-sm text-navy-soft">
-              {t('comeBackTomorrow')}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="btn-primary"
-            >
-              {t('playAgainSame')}
-            </button>
-            <Link href={`/jogar/${result.mode}`} className="btn-ghost">
-              {t('changeTheme')}
-            </Link>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="text-center text-sm text-navy-soft underline"
-        >
-          {copied ? tc('copied') : tc('copy')}
-        </button>
       </div>
+
+      {/* WhatsApp share (sends the result image + link) */}
+      <button
+        type="button"
+        onClick={handleWhatsApp}
+        className="btn w-full border-transparent font-bold text-white shadow-tactile"
+        style={{ background: WA_GREEN }}
+      >
+        💬 {t('shareWhatsapp')}
+      </button>
+
+      {/* Inline ranking */}
+      {showBackend && top.length > 0 && (
+        <div className="overflow-hidden rounded-card border-2 border-navy/15 bg-paper">
+          <div className="flex items-center justify-between bg-paper-2 px-3 py-2 font-mono text-[11px] uppercase tracking-wide text-navy-soft">
+            <span>
+              {t('rankingLabel')} · {themeLabel}
+            </span>
+            <span>{tm(result.mode)}</span>
+          </div>
+          <ol>
+            {top.map((row) => (
+              <li
+                key={row.rank}
+                className="flex items-center justify-between border-t border-navy/10 px-3 py-2"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="w-5 font-mono text-navy-soft">{row.rank}</span>
+                  <span className="font-sans">{row.name ?? '—'}</span>
+                </span>
+                <span className="font-mono font-bold text-teal">
+                  {isStreak ? (row.streak ?? 0) : row.score}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* Actions */}
+      {isDaily ? (
+        <div className="flex flex-col gap-2">
+          <Link href="/" className="btn-ghost w-full">
+            {t('playAgain')}
+          </Link>
+          <p className="text-center text-sm text-navy-soft">
+            {t('comeBackTomorrow')}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn-primary"
+          >
+            {t('playAgainSame')}
+          </button>
+          <Link href={`/jogar/${result.mode}`} className="btn-ghost">
+            {t('changeTheme')}
+          </Link>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="text-center text-sm text-navy-soft underline"
+      >
+        {copied ? tc('copied') : tc('copy')}
+      </button>
     </div>
   );
 }

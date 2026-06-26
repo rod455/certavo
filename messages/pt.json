@@ -66,6 +66,7 @@
     "save": "Salvar",
     "saving": "Salvando…",
     "rankPosition": "Você está em #{rank} no ranking!",
+    "beatPercent": "Você superaria ~{pct}% do ranking atual.",
     "rankUnavailable": "Ranking indisponível no momento.",
     "comeBackTomorrow": "Volte amanhã para um novo desafio.",
     "alreadyPlayed": "Você já jogou o desafio de hoje."
