@@ -8,7 +8,7 @@ export function ComboMeter({ combo }: { combo: number }) {
   if (combo < 2) return <div className="h-7" aria-hidden />;
   const mult = comboMultiplier(combo).toFixed(2);
   return (
-    <div className="flex h-7 items-center justify-center gap-2 font-mono text-sm font-bold text-emerald animate-fade-up">
+    <div className="flex h-7 items-center justify-center gap-2 font-mono text-sm font-bold text-teal animate-fade-up">
       <span>🔥 {t('combo', { n: combo })}</span>
       <span className="text-navy-soft">×{mult}</span>
     </div>

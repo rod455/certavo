@@ -23,9 +23,9 @@ export function OptionButton({
     'btn w-full justify-start text-left border-2 font-semibold transition-all';
   const byState: Record<OptionState, string> = {
     idle: 'bg-paper text-navy shadow-tactile hover:-translate-y-[1px]',
-    correct: 'bg-emerald text-paper border-emerald shadow-none animate-pop',
+    correct: 'bg-teal text-paper border-teal shadow-none animate-pop',
     wrong: 'bg-error text-paper border-error shadow-none animate-shake',
-    reveal: 'bg-emerald/15 text-navy border-emerald',
+    reveal: 'bg-teal/15 text-navy border-teal',
     disabled: 'bg-paper text-navy/50 shadow-none',
   };
 

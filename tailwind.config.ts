@@ -9,12 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: 'var(--paper)',
-        navy: 'var(--navy)',
-        emerald: 'var(--emerald)',
-        error: 'var(--error)',
-        'paper-2': 'var(--paper-2)',
-        'navy-soft': 'var(--navy-soft)',
+        paper: 'rgb(var(--paper) / <alpha-value>)',
+        'paper-2': 'rgb(var(--paper-2) / <alpha-value>)',
+        navy: 'rgb(var(--navy) / <alpha-value>)',
+        'navy-soft': 'rgb(var(--navy-soft) / <alpha-value>)',
+        'navy-dark': 'rgb(var(--navy-dark) / <alpha-value>)',
+        teal: 'rgb(var(--teal) / <alpha-value>)',
+        'teal-strong': 'rgb(var(--teal-strong) / <alpha-value>)',
+        'teal-soft': 'rgb(var(--teal-soft) / <alpha-value>)',
+        error: 'rgb(var(--error) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-schibsted)', 'system-ui', 'sans-serif'],
@@ -24,8 +27,8 @@ const config: Config = {
         card: '14px',
       },
       boxShadow: {
-        tactile: '0 2px 0 0 var(--navy)',
-        'tactile-sm': '0 1px 0 0 var(--navy)',
+        tactile: '0 2px 0 0 rgb(var(--navy))',
+        'tactile-sm': '0 1px 0 0 rgb(var(--navy))',
       },
       keyframes: {
         pop: {

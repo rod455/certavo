@@ -21,7 +21,7 @@ export function Timer({
       <div className="h-2.5 w-full overflow-hidden rounded-full bg-navy/10">
         <div
           className={`h-full rounded-full transition-[width] duration-200 ease-linear ${
-            low ? 'bg-error' : 'bg-emerald'
+            low ? 'bg-error' : 'bg-teal'
           }`}
           style={{ width: `${pct}%` }}
           role="progressbar"

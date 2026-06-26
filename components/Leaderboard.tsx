@@ -75,7 +75,7 @@ export function Leaderboard() {
                 <span className="w-6 font-mono font-bold">{row.rank}</span>
                 <span>{row.name ?? t('anon')}</span>
               </span>
-              <span className="font-mono font-bold text-emerald">{row.score}</span>
+              <span className="font-mono font-bold text-teal">{row.score}</span>
             </li>
           ))}
         </ol>

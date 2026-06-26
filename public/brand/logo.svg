@@ -1,8 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 200" role="img" aria-label="Certavo">
-  <rect x="4" y="4" width="192" height="192" rx="42" fill="#1C2B3A"/>
-  <circle cx="100" cy="100" r="58" fill="none" stroke="#18A06B" stroke-width="17"/>
-  <circle cx="100" cy="100" r="26" fill="#18A06B"/>
-  <circle cx="100" cy="100" r="12" fill="#F6F2EA"/>
-  <text x="232" y="132" font-family="'Schibsted Grotesk', system-ui, sans-serif"
-        font-size="120" font-weight="800" letter-spacing="-3" fill="#1C2B3A">Certavo</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" fill="none" role="img" aria-label="Certavo">
+  <!-- monogram -->
+  <path d="M118 38 A60 60 0 1 0 118 122" stroke="#1C2B3A" stroke-width="17" stroke-linecap="round"/>
+  <path d="M54 82 L74 104 L112 56" stroke="#1E94AB" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- wordmark: "certa" + check (v) + "o" -->
+  <text x="190" y="108" font-family="'Schibsted Grotesk', system-ui, sans-serif" font-size="104" font-weight="700" letter-spacing="-3" fill="#1C2B3A">certa</text>
+  <path d="M453 78 L470 96 L500 58" stroke="#1E94AB" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="505" y="108" font-family="'Schibsted Grotesk', system-ui, sans-serif" font-size="104" font-weight="700" letter-spacing="-3" fill="#1C2B3A">o</text>
 </svg>

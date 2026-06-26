@@ -44,7 +44,7 @@ export async function GET(req: Request) {
               display: 'flex',
               alignItems: 'center',
               gap: 20,
-              background: '#18A06B',
+              background: '#1E94AB',
               color: '#F6F2EA',
               padding: '20px 40px',
               borderRadius: 20,

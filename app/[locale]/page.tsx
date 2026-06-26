@@ -36,7 +36,7 @@ export default async function HomePage({
       <section>
         <Link
           href={`/d/${challenge}`}
-          className="block rounded-card border-2 border-navy bg-emerald p-6 text-paper shadow-tactile transition-transform active:translate-y-[2px] active:shadow-none"
+          className="block rounded-card border-2 border-navy bg-teal p-6 text-paper shadow-tactile transition-transform active:translate-y-[2px] active:shadow-none"
         >
           <div className="font-mono text-sm uppercase tracking-wide opacity-90">
             {tm('daily')} #{challenge}

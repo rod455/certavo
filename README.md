@@ -43,7 +43,7 @@ hidden and everything else works.
 | `pnpm lint` | ESLint |
 | `pnpm test` | Vitest (engine, daily determinism, content, share) |
 | `pnpm gen:countries` | Regenerate `data/countries-i18n.json` from ICU |
-| `pnpm tsx scripts/gen-icons.ts` | Regenerate PWA icons |
+| `pnpm tsx scripts/gen-logo.ts` | Regenerate the brand logo + PWA icons (C+check monogram) |
 | `pnpm seed` | Seed Supabase content (needs `SUPABASE_SERVICE_ROLE_KEY`) |
 
 ## Game modes

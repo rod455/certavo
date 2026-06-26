@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 :root {
-  /* Brand tokens — keep in sync with tailwind.config.ts */
-  --paper: #f6f2ea;
-  --paper-2: #efe9dc;
-  --navy: #1c2b3a;
-  --navy-soft: #36485a;
-  --emerald: #18a06b;
-  --error: #c0492f;
+  /* Brand tokens — sRGB channels so Tailwind opacity modifiers work
+     (rgb(var(--x) / <alpha-value>)). Keep in sync with tailwind.config.ts. */
+  --paper: 246 242 234; /* #F6F2EA */
+  --paper-2: 239 233 220; /* #EFE9DC */
+  --navy: 28 43 58; /* #1C2B3A */
+  --navy-soft: 54 72 90; /* #36485A */
+  --navy-dark: 17 32 46; /* #11202E */
+  --teal: 30 148 171; /* #1E94AB — oklch(0.60 0.10 200), the accent (acerto/CTA) */
+  --teal-strong: 22 121 140; /* oklch(0.52 0.10 200) — hover/active */
+  --teal-soft: 95 180 196; /* oklch(0.72 0.08 200) */
+  --error: 192 73 47; /* #C0492F */
 }
 
 @layer base {
@@ -18,8 +22,8 @@
   }
 
   body {
-    background-color: var(--paper);
-    color: var(--navy);
+    background-color: rgb(var(--paper));
+    color: rgb(var(--navy));
     font-feature-settings: 'ss01';
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -27,7 +31,7 @@
 
   /* Visible, accessible focus ring for keyboard users */
   :focus-visible {
-    outline: 3px solid var(--navy);
+    outline: 3px solid rgb(var(--navy));
     outline-offset: 2px;
   }
 }
@@ -44,7 +48,7 @@
       active:translate-y-[2px] active:shadow-none disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-emerald text-paper shadow-tactile;
+    @apply btn bg-teal text-paper shadow-tactile;
   }
   .btn-ghost {
     @apply btn bg-paper text-navy shadow-tactile;

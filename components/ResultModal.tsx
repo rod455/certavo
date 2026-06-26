@@ -54,7 +54,7 @@ export function ResultModal({ result }: { result: GameResult }) {
             {resultGrid(result.answers)}
           </pre>
         ) : (
-          <p className="my-4 text-center font-mono text-4xl font-bold text-emerald">
+          <p className="my-4 text-center font-mono text-4xl font-bold text-teal">
             {result.score}
           </p>
         )}

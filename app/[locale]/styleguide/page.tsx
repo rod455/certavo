@@ -7,7 +7,7 @@ import { AdSlot } from '@/components/AdSlot';
 const SWATCHES = [
   { name: 'paper', var: '--paper' },
   { name: 'navy', var: '--navy' },
-  { name: 'emerald', var: '--emerald' },
+  { name: 'teal', var: '--teal' },
   { name: 'error', var: '--error' },
 ];
 
@@ -33,7 +33,7 @@ export default async function StyleguidePage({
             <div key={s.name} className="rounded-card border-2 border-navy/15 p-2">
               <div
                 className="h-16 w-full rounded-md border border-navy/10"
-                style={{ background: `var(${s.var})` }}
+                style={{ background: `rgb(var(${s.var}))` }}
               />
               <div className="mt-2 font-mono text-xs">
                 {s.name}
