@@ -1,0 +1,77 @@
+{
+  "common": {
+    "play": "Jogar",
+    "back": "Voltar",
+    "loading": "Carregando…",
+    "score": "Pontos",
+    "streak": "Sequência",
+    "best": "Recorde",
+    "next": "Próxima",
+    "share": "Compartilhar",
+    "copy": "Copiar resultado",
+    "copied": "Copiado!",
+    "tryAgain": "Jogar de novo",
+    "language": "Idioma"
+  },
+  "nav": {
+    "home": "Início",
+    "ranking": "Ranking",
+    "styleguide": "Estilo"
+  },
+  "home": {
+    "title": "O quiz visual de todo dia",
+    "subtitle": "Bandeiras, esportes e muito mais. Jogue sem login, em segundos.",
+    "chooseMode": "Escolha como jogar",
+    "chooseTheme": "Escolha um tema",
+    "dailyCta": "Desafio do Dia",
+    "dailyDesc": "10 perguntas iguais para o mundo todo. Compare seu resultado.",
+    "playDaily": "Jogar o desafio de hoje"
+  },
+  "modes": {
+    "daily": "Desafio do Dia",
+    "time_attack": "Contra o Tempo",
+    "sudden_death": "Morte Súbita",
+    "time_attackDesc": "45s no relógio. Erros tiram tempo, combos dão fôlego.",
+    "sudden_deathDesc": "Um erro e acabou. Até onde vai sua sequência?",
+    "dailyShort": "Diário"
+  },
+  "themes": {
+    "flags": "Bandeiras do Mundo",
+    "sports": "Esportes"
+  },
+  "game": {
+    "questionOf": "Pergunta {current} de {total}",
+    "combo": "Combo x{n}",
+    "timeLeft": "Tempo",
+    "correct": "Acertou!",
+    "wrong": "Errou",
+    "whichCountry": "Que país é esta bandeira?",
+    "selectFlag": "Qual é a bandeira de {country}?"
+  },
+  "result": {
+    "title": "Resultado",
+    "dailyTitle": "{site} • Desafio do Dia #{n}",
+    "youScored": "Você fez {score} de {total}",
+    "shareWhatsapp": "Desafiar amigos no WhatsApp",
+    "playAgain": "Jogar outro modo",
+    "comeBackTomorrow": "Volte amanhã para um novo desafio.",
+    "alreadyPlayed": "Você já jogou o desafio de hoje."
+  },
+  "ranking": {
+    "title": "Ranking",
+    "daily": "Diário",
+    "weekly": "Semanal",
+    "allTime": "Geral",
+    "empty": "Ainda sem pontuações. Seja o primeiro!",
+    "rank": "#",
+    "player": "Jogador",
+    "anon": "Anônimo"
+  },
+  "styleguide": {
+    "title": "Guia de Estilo",
+    "subtitle": "Tokens, tipografia e componentes do Certavo."
+  },
+  "ads": {
+    "placeholder": "Espaço de anúncio"
+  }
+}

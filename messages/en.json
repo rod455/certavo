@@ -1,0 +1,77 @@
+{
+  "common": {
+    "play": "Play",
+    "back": "Back",
+    "loading": "Loading…",
+    "score": "Score",
+    "streak": "Streak",
+    "best": "Best",
+    "next": "Next",
+    "share": "Share",
+    "copy": "Copy result",
+    "copied": "Copied!",
+    "tryAgain": "Play again",
+    "language": "Language"
+  },
+  "nav": {
+    "home": "Home",
+    "ranking": "Ranking",
+    "styleguide": "Style"
+  },
+  "home": {
+    "title": "The daily visual quiz",
+    "subtitle": "Flags, sports and more. Play with no login, in seconds.",
+    "chooseMode": "Choose how to play",
+    "chooseTheme": "Choose a theme",
+    "dailyCta": "Daily Challenge",
+    "dailyDesc": "10 questions, the same for the whole world. Compare your result.",
+    "playDaily": "Play today's challenge"
+  },
+  "modes": {
+    "daily": "Daily Challenge",
+    "time_attack": "Time Attack",
+    "sudden_death": "Sudden Death",
+    "time_attackDesc": "45s on the clock. Mistakes cost time, combos buy it back.",
+    "sudden_deathDesc": "One mistake and it's over. How long is your streak?",
+    "dailyShort": "Daily"
+  },
+  "themes": {
+    "flags": "World Flags",
+    "sports": "Sports"
+  },
+  "game": {
+    "questionOf": "Question {current} of {total}",
+    "combo": "Combo x{n}",
+    "timeLeft": "Time",
+    "correct": "Correct!",
+    "wrong": "Wrong",
+    "whichCountry": "Which country is this flag?",
+    "selectFlag": "Which flag belongs to {country}?"
+  },
+  "result": {
+    "title": "Result",
+    "dailyTitle": "{site} • Daily Challenge #{n}",
+    "youScored": "You scored {score} of {total}",
+    "shareWhatsapp": "Challenge friends on WhatsApp",
+    "playAgain": "Play another mode",
+    "comeBackTomorrow": "Come back tomorrow for a new challenge.",
+    "alreadyPlayed": "You already played today's challenge."
+  },
+  "ranking": {
+    "title": "Ranking",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "allTime": "All time",
+    "empty": "No scores yet. Be the first!",
+    "rank": "#",
+    "player": "Player",
+    "anon": "Anonymous"
+  },
+  "styleguide": {
+    "title": "Style Guide",
+    "subtitle": "Certavo tokens, typography and components."
+  },
+  "ads": {
+    "placeholder": "Ad space"
+  }
+}

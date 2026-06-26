@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand tokens — keep in sync with tailwind.config.ts */
+  --paper: #f6f2ea;
+  --paper-2: #efe9dc;
+  --navy: #1c2b3a;
+  --navy-soft: #36485a;
+  --emerald: #18a06b;
+  --error: #c0492f;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--navy);
+    font-feature-settings: 'ss01';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible, accessible focus ring for keyboard users */
+  :focus-visible {
+    outline: 3px solid var(--navy);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-screen-sm px-4;
+  }
+
+  /* Tactile primary button — Wordle-ish, firm press feel */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-card
+      border-2 border-navy px-5 py-3 text-base font-semibold transition-all
+      active:translate-y-[2px] active:shadow-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-emerald text-paper shadow-tactile;
+  }
+  .btn-ghost {
+    @apply btn bg-paper text-navy shadow-tactile;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
