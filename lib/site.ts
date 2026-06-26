@@ -15,6 +15,15 @@ export const SITE_TAGLINE = {
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://certavo.app';
 
+/**
+ * Absolute URL of the app logo for metadata (JSON-LD, OG fallback). Override
+ * with NEXT_PUBLIC_LOGO_URL (e.g. a Supabase Storage URL); defaults to the
+ * bundled asset, which never expires. Prefer a public-bucket URL over a signed
+ * one for metadata — signed URLs expire.
+ */
+export const SITE_LOGO_URL =
+  process.env.NEXT_PUBLIC_LOGO_URL || `${SITE_URL}/brand/logo-mark-1024.png`;
+
 /** Short share host shown in the result grid, e.g. "certavo.app/d/128". */
 export const SHARE_HOST = SITE_URL.replace(/^https?:\/\//, '');
 
