@@ -12,6 +12,9 @@ export async function SiteHeader() {
           <Logo />
         </Link>
         <nav className="flex items-center gap-4 text-sm">
+          <Link href="/grupos" className="font-medium hover:text-teal">
+            {t('groups')}
+          </Link>
           <Link href="/ranking" className="font-medium hover:text-teal">
             {t('ranking')}
           </Link>

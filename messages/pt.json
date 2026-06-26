@@ -16,7 +16,32 @@
   "nav": {
     "home": "Início",
     "ranking": "Ranking",
+    "groups": "Grupos",
     "styleguide": "Estilo"
+  },
+  "groups": {
+    "title": "Grupos",
+    "subtitle": "Crie uma liga com os amigos e dispute toda semana.",
+    "create": "Criar grupo",
+    "groupName": "Nome do grupo",
+    "join": "Entrar",
+    "joinByCode": "Entrar por código",
+    "codePlaceholder": "Código de convite",
+    "myGroups": "Meus grupos",
+    "members": "{n} membros",
+    "empty": "Você ainda não está em nenhum grupo.",
+    "nickPlaceholder": "Seu apelido",
+    "nickNeeded": "Escolha um apelido para participar.",
+    "invite": "Convidar amigos",
+    "inviteText": "Entra na minha liga do Certavo: {name} 🏆",
+    "weeklyRanking": "Ranking da semana",
+    "points": "pts",
+    "playNow": "Jogar agora",
+    "joinThis": "Entrar neste grupo",
+    "alreadyMember": "Você é membro",
+    "notFound": "Grupo não encontrado.",
+    "unavailable": "Indisponível no momento.",
+    "copyLink": "Copiar link"
   },
   "home": {
     "title": "O quiz visual de todo dia",

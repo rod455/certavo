@@ -16,7 +16,32 @@
   "nav": {
     "home": "Home",
     "ranking": "Ranking",
+    "groups": "Groups",
     "styleguide": "Style"
+  },
+  "groups": {
+    "title": "Groups",
+    "subtitle": "Create a league with friends and compete every week.",
+    "create": "Create group",
+    "groupName": "Group name",
+    "join": "Join",
+    "joinByCode": "Join by code",
+    "codePlaceholder": "Invite code",
+    "myGroups": "My groups",
+    "members": "{n} members",
+    "empty": "You're not in any group yet.",
+    "nickPlaceholder": "Your nickname",
+    "nickNeeded": "Pick a nickname to join.",
+    "invite": "Invite friends",
+    "inviteText": "Join my Certavo league: {name} 🏆",
+    "weeklyRanking": "This week's ranking",
+    "points": "pts",
+    "playNow": "Play now",
+    "joinThis": "Join this group",
+    "alreadyMember": "You're a member",
+    "notFound": "Group not found.",
+    "unavailable": "Unavailable right now.",
+    "copyLink": "Copy link"
   },
   "home": {
     "title": "The daily visual quiz",
