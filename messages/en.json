@@ -69,6 +69,7 @@
     "rankPosition": "You're #{rank} on the leaderboard!",
     "beatPercent": "You'd beat ~{pct}% of the current ranking.",
     "rankUnavailable": "Ranking unavailable right now.",
+    "minToRank": "Get at least 1 right to join the ranking.",
     "comeBackTomorrow": "Come back tomorrow for a new challenge.",
     "alreadyPlayed": "You already played today's challenge."
   },

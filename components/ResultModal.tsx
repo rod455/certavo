@@ -134,7 +134,9 @@ export function ResultModal({
     } else setSaveError(true);
   }
 
-  const showSave = allowSave && showBackend;
+  // Don't rank a zero — no point cluttering the board with 0s.
+  const canSave = myMetric > 0;
+  const showSave = allowSave && showBackend && canSave;
   const top = rows.slice(0, 7);
   const pct =
     rows.length > 0
@@ -193,6 +195,12 @@ export function ResultModal({
               )}
             </div>
           ))}
+
+        {allowSave && showBackend && !canSave && (
+          <p className="mt-4 font-sans text-sm text-paper/70">
+            {t('minToRank')}
+          </p>
+        )}
       </div>
 
       {/* WhatsApp share (sends the result image + link) */}
