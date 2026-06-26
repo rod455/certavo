@@ -11,8 +11,12 @@ const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
 const jb = (o: unknown) => `${q(JSON.stringify(o))}::jsonb`;
 
 const lines: string[] = [
-  '-- Certavo content seed. Paste into the Supabase SQL editor. Idempotent.',
+  '-- Certavo content seed. Paste into the Supabase SQL editor.',
+  '-- Clean rebuild: wipes content and reinserts (scores are untouched).',
   'begin;',
+  '',
+  '-- Reset content (cascades to packs + questions). Scores have no FK here.',
+  'delete from themes;',
   '',
 ];
 

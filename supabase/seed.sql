@@ -1,16 +1,21 @@
--- Certavo content seed. Paste into the Supabase SQL editor. Idempotent.
+-- Certavo content seed. Paste into the Supabase SQL editor.
+-- Clean rebuild: wipes content and reinserts (scores are untouched).
 begin;
+
+-- Reset content (cascades to packs + questions). Scores have no FK here.
+delete from themes;
 
 insert into themes (slug, name, icon) values
   ('flags', '{"pt":"Bandeiras do Mundo","en":"World Flags","es":"Banderas del Mundo"}'::jsonb, '🏳️'),
-  ('sports', '{"pt":"Esportes","en":"Sports","es":"Deportes"}'::jsonb, '🏆')
+  ('worldcup', '{"pt":"Copa do Mundo","en":"World Cup","es":"Copa del Mundo"}'::jsonb, '⚽'),
+  ('sports', '{"pt":"Esportes","en":"Sports","es":"Deportes"}'::jsonb, '🏅')
 on conflict (slug) do update set name = excluded.name, icon = excluded.icon;
 
 insert into packs (theme_id, slug, name)
 select t.id, x.slug, x.name from (values
   ('flags', 'flags-name', '{"pt":"Bandeira → País","en":"Flag → Country","es":"Bandera → País"}'::jsonb),
   ('flags', 'name-flag', '{"pt":"País → Bandeira","en":"Country → Flag","es":"País → Bandera"}'::jsonb),
-  ('sports', 'world-cup-champions', '{"pt":"Campeões da Copa do Mundo","en":"World Cup Champions","es":"Campeones de la Copa del Mundo"}'::jsonb),
+  ('worldcup', 'world-cup-champions', '{"pt":"Campeões da Copa do Mundo","en":"World Cup Champions","es":"Campeones de la Copa del Mundo"}'::jsonb),
   ('sports', 'olympic-hosts', '{"pt":"Sedes Olímpicas","en":"Olympic Hosts","es":"Sedes Olímpicas"}'::jsonb)
 ) as x(theme_slug, slug, name)
 join themes t on t.slug = x.theme_slug

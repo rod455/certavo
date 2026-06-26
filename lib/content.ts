@@ -200,10 +200,10 @@ export const THEMES = {
       },
     ],
   },
-  sports: {
-    slug: 'sports',
-    name: { pt: 'Esportes', en: 'Sports', es: 'Deportes' },
-    icon: '🏆',
+  worldcup: {
+    slug: 'worldcup',
+    name: { pt: 'Copa do Mundo', en: 'World Cup', es: 'Copa del Mundo' },
+    icon: '⚽',
     packs: [
       {
         slug: 'world-cup-champions',
@@ -214,6 +214,13 @@ export const THEMES = {
         },
         build: worldCupQuestions,
       },
+    ],
+  },
+  sports: {
+    slug: 'sports',
+    name: { pt: 'Esportes', en: 'Sports', es: 'Deportes' },
+    icon: '🏅',
+    packs: [
       {
         slug: 'olympic-hosts',
         name: {
@@ -238,7 +245,7 @@ export function questionsForTheme(theme: ThemeKey): Question[] {
 export function dailyPool(): Question[] {
   return [
     ...flagToNameQuestions('flags:flags-name'),
-    ...worldCupQuestions('sports:world-cup-champions'),
+    ...worldCupQuestions('worldcup:world-cup-champions'),
     ...olympicQuestions('sports:olympic-hosts'),
   ];
 }
@@ -265,12 +272,14 @@ export const DAILY_EDITIONS: DailyEdition[] = [
     build: () => flagToNameQuestions('flags:flags-name'),
   },
   {
+    slug: 'worldcup',
+    name: { pt: 'Copa do Mundo', en: 'World Cup', es: 'Copa del Mundo' },
+    build: () => worldCupQuestions('worldcup:world-cup-champions'),
+  },
+  {
     slug: 'sports',
     name: { pt: 'Esportes', en: 'Sports', es: 'Deportes' },
-    build: () => [
-      ...worldCupQuestions('sports:world-cup-champions'),
-      ...olympicQuestions('sports:olympic-hosts'),
-    ],
+    build: () => olympicQuestions('sports:olympic-hosts'),
   },
   {
     slug: 'mixed',

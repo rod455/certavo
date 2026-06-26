@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
@@ -5,8 +6,35 @@ import type { Locale } from '@/i18n/routing';
 import type { GameMode } from '@/lib/types';
 import { type ThemeKey, THEMES } from '@/lib/content';
 import { PracticeGame } from '@/components/PracticeGame';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 const VALID_MODES: GameMode[] = ['time_attack', 'sudden_death'];
+
+export async function generateMetadata({
+  params: { locale, mode },
+  searchParams,
+}: {
+  params: { locale: Locale; mode: string };
+  searchParams: { theme?: string };
+}): Promise<Metadata> {
+  if (!VALID_MODES.includes(mode as GameMode)) return {};
+  const tm = await getTranslations({ locale, namespace: 'modes' });
+  const tt = await getTranslations({ locale, namespace: 'themes' });
+  const theme =
+    searchParams.theme && searchParams.theme in THEMES
+      ? (searchParams.theme as ThemeKey)
+      : null;
+  const label = theme ? `${tm(mode)} · ${tt(theme)}` : tm(mode);
+  const ogUrl = `${SITE_URL}/api/og?locale=${locale}&label=${encodeURIComponent(label)}`;
+  return {
+    title: label,
+    openGraph: {
+      title: `${SITE_NAME} • ${label}`,
+      images: [{ url: ogUrl, width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', images: [ogUrl] },
+  };
+}
 
 export default async function PlayPage({
   params: { locale, mode },

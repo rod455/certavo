@@ -86,7 +86,9 @@ export async function GET(req: Request) {
   // ---- Default: daily link-preview card (Open Graph) ----
   const n = searchParams.get('n');
   const edition = searchParams.get('t');
+  const label = searchParams.get('label'); // generic badge (e.g. practice mode + theme)
   const tagline = TAGLINE[locale] ?? TAGLINE.pt;
+  const badge = n ? `#${n}${edition ? ` · ${edition}` : ''}` : label;
 
   return new ImageResponse(
     (
@@ -110,7 +112,7 @@ export async function GET(req: Request) {
         <div style={{ fontSize: 36, color: NAVY_SOFT, marginTop: 8 }}>
           {tagline}
         </div>
-        {n ? (
+        {badge ? (
           <div
             style={{
               marginTop: 48,
@@ -125,8 +127,7 @@ export async function GET(req: Request) {
               fontWeight: 700,
             }}
           >
-            <span>#{n}</span>
-            {edition ? <span>· {edition}</span> : null}
+            {badge}
           </div>
         ) : null}
         <div style={{ marginTop: 48, fontSize: 28, color: NAVY_SOFT }}>
