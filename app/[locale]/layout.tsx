@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/i18n/routing';
 import { schibsted, spaceMono } from '../fonts';
 import { SiteHeader } from '@/components/SiteHeader';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/site';
 import '../globals.css';
 
@@ -71,6 +72,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <SiteHeader />
           <main className="container-app py-6">{children}</main>
+          <ServiceWorkerRegister />
         </NextIntlClientProvider>
       </body>
     </html>
