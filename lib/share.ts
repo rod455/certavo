@@ -1,9 +1,14 @@
 import type { AnswerRecord } from './types';
 import { SITE_NAME, SHARE_HOST } from './site';
 
+// Use ASCII unicode escapes (not literal emoji) so no editor/build/transport
+// step can ever mojibake them — the runtime string is identical.
+const GREEN = '\u{1F7E9}'; // 🟩
+const BLACK = '\u{2B1B}'; // ⬛
+
 /** Build the Wordle-style emoji grid (5 per row). */
 export function resultGrid(answers: AnswerRecord[], perRow = 5): string {
-  const cells = answers.map((a) => (a.correct ? '🟩' : '⬛'));
+  const cells = answers.map((a) => (a.correct ? GREEN : BLACK));
   const rows: string[] = [];
   for (let i = 0; i < cells.length; i += perRow) {
     rows.push(cells.slice(i, i + perRow).join(''));

@@ -4,6 +4,7 @@ import {
   dateForChallengeNumber,
   selectDailyQuestions,
   DAILY_QUESTION_COUNT,
+  DAILY_EPOCH,
 } from '@/lib/daily';
 import { dailyPool } from '@/lib/content';
 
@@ -16,8 +17,9 @@ describe('daily challenge', () => {
   });
 
   it('epoch is challenge #1 and increments daily', () => {
-    expect(challengeNumberForDate('2024-01-01')).toBe(1);
-    expect(challengeNumberForDate('2024-01-02')).toBe(2);
+    expect(challengeNumberForDate(DAILY_EPOCH)).toBe(1);
+    const dayAfter = dateForChallengeNumber(2);
+    expect(challengeNumberForDate(dayAfter)).toBe(2);
   });
 
   it('selects the same questions for the same date (global determinism)', () => {

@@ -1,8 +1,8 @@
 import type { Question } from './types';
 import { seededRng, pickN, shuffle } from './rng';
 
-/** Day 0 of Certavo. Challenge #1 is the first day after the epoch. */
-export const DAILY_EPOCH = '2024-01-01';
+/** Launch day of Certavo: this date is Challenge #1, and it counts up daily. */
+export const DAILY_EPOCH = '2026-06-26';
 export const DAILY_QUESTION_COUNT = 10;
 
 const MS_PER_DAY = 86_400_000;
