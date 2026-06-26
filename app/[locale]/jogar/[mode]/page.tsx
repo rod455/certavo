@@ -3,7 +3,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { Locale } from '@/i18n/routing';
 import type { GameMode } from '@/lib/types';
-import { questionsForTheme, type ThemeKey, THEMES } from '@/lib/content';
+import { type ThemeKey, THEMES } from '@/lib/content';
 import { PracticeGame } from '@/components/PracticeGame';
 
 const VALID_MODES: GameMode[] = ['time_attack', 'sudden_death'];
@@ -59,15 +59,14 @@ export default async function PlayPage({
     );
   }
 
-  // Step 3: theme chosen → play.
-  const pool = questionsForTheme(chosen);
+  // Step 3: theme chosen → play (the deck is generated on the client).
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-baseline justify-between">
         <h1 className="font-sans text-xl font-bold">{tm(mode)}</h1>
         <span className="font-mono text-sm text-navy-soft">{tt(chosen)}</span>
       </header>
-      <PracticeGame mode={mode as GameMode} themeSlug={chosen} pool={pool} />
+      <PracticeGame mode={mode as GameMode} themeSlug={chosen} />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { GameResult } from '@/lib/types';
-import { whatsappLink, shareOrCopy, tryShareImage } from '@/lib/share';
+import { whatsappLink, shareOrCopy, tryShareImage, isMobile } from '@/lib/share';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { submitScore, getLeaderboard, type LeaderboardRow } from '@/lib/scores';
 import { getNick, setNick } from '@/lib/anon';
@@ -97,8 +97,13 @@ export function ResultModal({
     `&m=${encodeURIComponent(message)}`;
 
   async function handleWhatsApp() {
-    const shared = await tryShareImage(imageUrl, shareText);
-    if (!shared) window.open(whatsappLink(shareText), '_blank', 'noopener');
+    // Mobile: share the result image with the link in the caption (shareText).
+    // Desktop: open WhatsApp directly (no OS share sheet).
+    if (isMobile()) {
+      const shared = await tryShareImage(imageUrl, shareText);
+      if (shared) return;
+    }
+    window.open(whatsappLink(shareText), '_blank', 'noopener');
   }
 
   const [copied, setCopied] = useState(false);

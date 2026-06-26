@@ -5,6 +5,16 @@ export function whatsappLink(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
+/** Rough mobile detection — file sharing (image to WhatsApp) only makes sense
+ *  on mobile; desktop should open wa.me directly. */
+export function isMobile(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const uaData = (navigator as Navigator & { userAgentData?: { mobile?: boolean } })
+    .userAgentData;
+  if (uaData && typeof uaData.mobile === 'boolean') return uaData.mobile;
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 /**
  * Try to share an actual image file (the result card) via the Web Share API —
  * this is what lets WhatsApp receive the image + the play link. Returns true

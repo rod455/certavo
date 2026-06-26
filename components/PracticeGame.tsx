@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { GameMode, Question, ThemeSlug } from '@/lib/types';
+import type { GameMode } from '@/lib/types';
+import { questionsForTheme, type ThemeKey } from '@/lib/content';
 import { GameBoard } from './GameBoard';
 
 const DECK_SIZE = 40;
@@ -20,17 +21,17 @@ function shuffleClient<T>(arr: readonly T[]): T[] {
 export function PracticeGame({
   mode,
   themeSlug,
-  pool,
 }: {
   mode: GameMode;
-  themeSlug: ThemeSlug;
-  pool: Question[];
+  themeSlug: ThemeKey;
 }) {
   const [seed] = useState(() => Date.now());
+  // Generate the deck on the client so the page itself stays light (no heavy
+  // server-side generation or large serialized payload per request).
   const deck = useMemo(
-    () => shuffleClient(pool).slice(0, DECK_SIZE),
+    () => shuffleClient(questionsForTheme(themeSlug)).slice(0, DECK_SIZE),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [seed],
+    [seed, themeSlug],
   );
 
   return <GameBoard mode={mode} deck={deck} themeSlug={themeSlug} />;
