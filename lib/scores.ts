@@ -58,6 +58,7 @@ export async function submitScore(
 export async function getLeaderboard(
   mode: string,
   period: 'daily' | 'weekly' | 'all',
+  theme?: string | null,
 ): Promise<LeaderboardRow[]> {
   const supabase = getSupabase();
   if (!supabase) return [];
@@ -65,6 +66,7 @@ export async function getLeaderboard(
     const { data, error } = await supabase.rpc('get_leaderboard', {
       p_mode: mode,
       p_period: period,
+      p_theme: theme ?? null,
     });
     if (error || !data) return [];
     return data as LeaderboardRow[];

@@ -1,32 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getLeaderboard, type LeaderboardRow } from '@/lib/scores';
 import { isBackendConfigured } from '@/lib/supabase/client';
+import { THEMES } from '@/lib/content';
 import type { GameMode } from '@/lib/types';
 
-// Each mode ranks within its natural window / metric.
-const TABS: { mode: GameMode; period: 'daily' | 'weekly' | 'all'; metric: 'score' | 'streak' }[] =
-  [
-    { mode: 'daily', period: 'daily', metric: 'score' },
-    { mode: 'time_attack', period: 'weekly', metric: 'score' },
-    { mode: 'sudden_death', period: 'all', metric: 'streak' },
-  ];
+const MODE_TABS: {
+  mode: GameMode;
+  period: 'daily' | 'weekly' | 'all';
+  metric: 'score' | 'streak';
+  themed: boolean;
+}[] = [
+  { mode: 'daily', period: 'daily', metric: 'score', themed: false },
+  { mode: 'time_attack', period: 'weekly', metric: 'score', themed: true },
+  { mode: 'sudden_death', period: 'all', metric: 'streak', themed: true },
+];
+
+const THEME_KEYS = Object.keys(THEMES);
 
 export function Leaderboard() {
   const t = useTranslations('ranking');
   const tm = useTranslations('modes');
+  const tt = useTranslations('themes');
   const [tab, setTab] = useState(0);
+  const [theme, setTheme] = useState(THEME_KEYS[0]);
   const [rows, setRows] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const active = TABS[tab];
+  const active = MODE_TABS[tab];
+  const themeFilter = useMemo(
+    () => (active.themed ? theme : null),
+    [active.themed, theme],
+  );
 
   useEffect(() => {
     let on = true;
     setLoading(true);
-    getLeaderboard(active.mode, active.period).then((r) => {
+    getLeaderboard(active.mode, active.period, themeFilter).then((r) => {
       if (on) {
         setRows(r);
         setLoading(false);
@@ -35,12 +47,18 @@ export function Leaderboard() {
     return () => {
       on = false;
     };
-  }, [active.mode, active.period]);
+  }, [active.mode, active.period, themeFilter]);
+
+  const empty = (
+    <p className="rounded-card border-2 border-dashed border-navy/20 p-6 text-center text-navy-soft">
+      {t('empty')}
+    </p>
+  );
 
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-2" role="tablist">
-        {TABS.map((tabDef, i) => (
+        {MODE_TABS.map((tabDef, i) => (
           <button
             key={tabDef.mode}
             role="tab"
@@ -57,16 +75,30 @@ export function Leaderboard() {
         ))}
       </div>
 
+      {active.themed && (
+        <div className="flex flex-wrap gap-2">
+          {THEME_KEYS.map((k) => (
+            <button
+              key={k}
+              onClick={() => setTheme(k)}
+              className={`rounded-full border-2 px-3 py-1 text-sm font-semibold ${
+                theme === k
+                  ? 'border-teal bg-teal/15 text-teal'
+                  : 'border-navy/15 text-navy-soft'
+              }`}
+            >
+              {tt(k as never)}
+            </button>
+          ))}
+        </div>
+      )}
+
       {!isBackendConfigured() ? (
-        <p className="rounded-card border-2 border-dashed border-navy/20 p-6 text-center text-navy-soft">
-          {t('empty')}
-        </p>
+        empty
       ) : loading ? (
         <p className="p-6 text-center font-mono text-navy-soft">…</p>
       ) : rows.length === 0 ? (
-        <p className="rounded-card border-2 border-dashed border-navy/20 p-6 text-center text-navy-soft">
-          {t('empty')}
-        </p>
+        empty
       ) : (
         <ol className="overflow-hidden rounded-card border-2 border-navy/15">
           {rows.map((row) => (

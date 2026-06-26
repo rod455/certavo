@@ -118,8 +118,9 @@ export function ResultModal({
     getLeaderboard(
       result.mode,
       PERIOD[result.mode as keyof typeof PERIOD] ?? 'all',
+      isDaily ? null : result.themeSlug, // daily is one global board
     ).then(setRows);
-  }, [showBackend, result.mode]);
+  }, [showBackend, result.mode, isDaily, result.themeSlug]);
   useEffect(() => loadBoard(), [loadBoard]);
 
   async function handleSave() {
