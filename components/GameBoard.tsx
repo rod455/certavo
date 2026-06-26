@@ -26,6 +26,7 @@ export function GameBoard({
   themeSlug,
   challengeDate,
   challengeNumber,
+  challengeName,
   onFinish,
 }: {
   mode: GameMode;
@@ -33,6 +34,7 @@ export function GameBoard({
   themeSlug: ThemeSlug;
   challengeDate?: string;
   challengeNumber?: number;
+  challengeName?: string;
   onFinish?: (result: GameResult) => void;
 }) {
   const locale = useLocale() as Lang;
@@ -78,6 +80,7 @@ export function GameBoard({
         answers: s.answers,
         challengeDate,
         challengeNumber,
+        challengeName,
       };
       if (mode === 'daily' && challengeDate) {
         markDailyPlayed(challengeDate, {
@@ -89,7 +92,15 @@ export function GameBoard({
       onFinish?.(result);
       return result;
     },
-    [mode, themeSlug, deck.length, challengeDate, challengeNumber, onFinish],
+    [
+      mode,
+      themeSlug,
+      deck.length,
+      challengeDate,
+      challengeNumber,
+      challengeName,
+      onFinish,
+    ],
   );
 
   const [result, setResult] = useState<GameResult | null>(null);

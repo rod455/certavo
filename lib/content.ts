@@ -242,3 +242,45 @@ export function dailyPool(): Question[] {
     ...olympicQuestions('sports:olympic-hosts'),
   ];
 }
+
+/**
+ * Daily "editions" — each day's challenge has a themed name and its own pool.
+ * Editions rotate deterministically by challenge number (so #1 is always the
+ * same edition for everyone). Add an edition = add an entry here (data-only).
+ */
+export type DailyEdition = {
+  slug: string;
+  name: Record<Lang, string>;
+  build: () => Question[];
+};
+
+export const DAILY_EDITIONS: DailyEdition[] = [
+  {
+    slug: 'flags',
+    name: {
+      pt: 'Bandeiras de Países',
+      en: 'Country Flags',
+      es: 'Banderas de Países',
+    },
+    build: () => flagToNameQuestions('flags:flags-name'),
+  },
+  {
+    slug: 'sports',
+    name: { pt: 'Esportes', en: 'Sports', es: 'Deportes' },
+    build: () => [
+      ...worldCupQuestions('sports:world-cup-champions'),
+      ...olympicQuestions('sports:olympic-hosts'),
+    ],
+  },
+  {
+    slug: 'mixed',
+    name: { pt: 'Geral', en: 'Mixed', es: 'General' },
+    build: () => dailyPool(),
+  },
+];
+
+/** Deterministic edition for a challenge number (#1 → first edition). */
+export function dailyEdition(challengeNumber: number): DailyEdition {
+  const i = (challengeNumber - 1) % DAILY_EDITIONS.length;
+  return DAILY_EDITIONS[i];
+}

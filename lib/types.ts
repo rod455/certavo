@@ -48,4 +48,5 @@ export type GameResult = {
   answers: AnswerRecord[];
   challengeDate?: string; // YYYY-MM-DD (daily only)
   challengeNumber?: number; // daily only
+  challengeName?: string; // localized edition name (daily only)
 };

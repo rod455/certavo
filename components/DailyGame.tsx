@@ -18,10 +18,12 @@ export function DailyGame({
   deck,
   challengeDate,
   challengeNumber,
+  challengeName,
 }: {
   deck: Question[];
   challengeDate: string;
   challengeNumber: number;
+  challengeName?: string;
 }) {
   const t = useTranslations('result');
   const [status, setStatus] = useState<'loading' | 'play' | 'done'>('loading');
@@ -42,13 +44,14 @@ export function DailyGame({
           answers: stored.answers,
           challengeDate,
           challengeNumber,
+          challengeName,
         });
       }
       setStatus('done');
     } else {
       setStatus('play');
     }
-  }, [challengeDate, challengeNumber, deck.length]);
+  }, [challengeDate, challengeNumber, challengeName, deck.length]);
 
   if (status === 'loading') return null;
 
@@ -69,6 +72,7 @@ export function DailyGame({
       themeSlug="daily"
       challengeDate={challengeDate}
       challengeNumber={challengeNumber}
+      challengeName={challengeName}
       onFinish={(r) => void submitScore(r)}
     />
   );

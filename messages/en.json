@@ -52,7 +52,7 @@
     "title": "Result",
     "dailyTitle": "{site} • Daily Challenge #{n}",
     "youScored": "You scored {score} of {total}",
-    "shareText": "I got {score}/{total} on {site} — Daily Challenge #{n}. Can you beat it?",
+    "shareText": "I got {score}/{total} on {site} — Daily Challenge #{n}: {edition}. Can you beat it?",
     "shareScore": "I scored {score} on {site}. Can you beat it?",
     "shareWhatsapp": "Challenge friends on WhatsApp",
     "playAgain": "Play another mode",

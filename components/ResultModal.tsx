@@ -26,6 +26,7 @@ export function ResultModal({ result }: { result: GameResult }) {
           total: result.total,
           site: SITE_NAME,
           n: result.challengeNumber,
+          edition: result.challengeName ?? '',
         })
       : t('shareScore', { score: result.score, site: SITE_NAME });
   const shareText = `${message}\n${challengeUrl}`;
@@ -51,6 +52,11 @@ export function ResultModal({ result }: { result: GameResult }) {
             ? t('dailyTitle', { site: SITE_NAME, n: result.challengeNumber })
             : t('title')}
         </h2>
+        {isDaily && result.challengeName && (
+          <p className="text-center font-sans text-base font-bold text-teal">
+            {result.challengeName}
+          </p>
+        )}
 
         <p className="my-3 text-center font-mono text-5xl font-bold text-teal">
           {isDaily ? `${result.correctCount}/${result.total}` : result.score}

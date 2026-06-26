@@ -8,7 +8,7 @@ import {
   todayUtc,
   challengeNumberForDate,
 } from '@/lib/daily';
-import { dailyPool } from '@/lib/content';
+import { dailyEdition } from '@/lib/content';
 import { DailyGame } from '@/components/DailyGame';
 import { AdSlot } from '@/components/AdSlot';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
@@ -26,8 +26,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const num = parseN(n);
   if (!num) return {};
-  const title = `${SITE_NAME} • #${num}`;
-  const ogUrl = `${SITE_URL}/api/og?n=${num}&locale=${locale}`;
+  const edition = dailyEdition(num);
+  const editionName = edition.name[locale] ?? edition.name.en;
+  const title = `${SITE_NAME} • #${num} — ${editionName}`;
+  const ogUrl = `${SITE_URL}/api/og?n=${num}&locale=${locale}&t=${encodeURIComponent(editionName)}`;
   return {
     title,
     openGraph: {
@@ -54,7 +56,9 @@ export default async function DailyPage({
   if (num > todayNum) notFound();
 
   const date = dateForChallengeNumber(num);
-  const deck = selectDailyQuestions(dailyPool(), date);
+  const edition = dailyEdition(num);
+  const editionName = edition.name[locale] ?? edition.name.en;
+  const deck = selectDailyQuestions(edition.build(), date);
 
   const t = await getTranslations('modes');
   const th = await getTranslations('home');
@@ -65,12 +69,20 @@ export default async function DailyPage({
         <h1 className="font-sans text-2xl font-bold">
           {t('daily')} #{num}
         </h1>
+        <p className="mt-1 font-sans text-lg font-bold text-teal">
+          {editionName}
+        </p>
         <p className="font-mono text-sm text-navy-soft">{date}</p>
         {num !== todayNum && (
           <p className="mt-1 text-sm text-navy-soft">{th('dailyDesc')}</p>
         )}
       </header>
-      <DailyGame deck={deck} challengeDate={date} challengeNumber={num} />
+      <DailyGame
+        deck={deck}
+        challengeDate={date}
+        challengeNumber={num}
+        challengeName={editionName}
+      />
       <AdSlot id="daily-bottom" />
     </div>
   );

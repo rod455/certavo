@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { Locale } from '@/i18n/routing';
 import { todayUtc, challengeNumberForDate } from '@/lib/daily';
-import { THEMES } from '@/lib/content';
+import { THEMES, dailyEdition } from '@/lib/content';
 import { AdSlot } from '@/components/AdSlot';
 import { JsonLd } from '@/components/JsonLd';
 
@@ -19,6 +19,8 @@ export default async function HomePage({
   const tm = await getTranslations('modes');
   const tt = await getTranslations('themes');
   const challenge = challengeNumberForDate(todayUtc());
+  const edition = dailyEdition(challenge);
+  const editionName = edition.name[locale] ?? edition.name.en;
 
   return (
     <div className="flex flex-col gap-8">
@@ -39,7 +41,7 @@ export default async function HomePage({
           className="block rounded-card border-2 border-navy bg-teal p-6 text-paper shadow-tactile transition-transform active:translate-y-[2px] active:shadow-none"
         >
           <div className="font-mono text-sm uppercase tracking-wide opacity-90">
-            {tm('daily')} #{challenge}
+            {tm('daily')} #{challenge} · {editionName}
           </div>
           <div className="mt-1 font-sans text-2xl font-bold">
             {t('playDaily')} →
@@ -65,14 +67,14 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* Themes */}
+      {/* Themes — tapping a theme jumps straight into Sudden Death */}
       <section>
         <h2 className="mb-3 font-sans text-lg font-bold">{t('chooseTheme')}</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {Object.values(THEMES).map((theme) => (
             <Link
               key={theme.slug}
-              href={`/jogar/time_attack?theme=${theme.slug}`}
+              href={`/jogar/sudden_death?theme=${theme.slug}`}
               className="flex items-center gap-3 rounded-card border-2 border-navy/15 bg-paper-2 p-4 shadow-tactile-sm transition-transform hover:-translate-y-[1px]"
             >
               <span className="text-2xl" aria-hidden>
