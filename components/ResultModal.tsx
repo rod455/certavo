@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type { GameResult } from '@/lib/types';
 import { whatsappLink, shareOrCopy } from '@/lib/share';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
@@ -27,13 +27,22 @@ export function ResultModal({
 }) {
   const t = useTranslations('result');
   const tc = useTranslations('common');
+  const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const isDaily = result.mode === 'daily';
 
+  // Build links from the real origin the app is served from (so it works on
+  // certavo.vercel.app, a custom domain, or localhost) and include the locale.
+  const [origin, setOrigin] = useState(SITE_URL);
+  useEffect(() => {
+    if (typeof window !== 'undefined') setOrigin(window.location.origin);
+  }, []);
+  const base = `${origin}/${locale}`;
+
   // ----- shareable message (plain text — renders everywhere) -----
   const url = isDaily
-    ? `${SITE_URL}/d/${result.challengeNumber}`
-    : `${SITE_URL}/jogar/${result.mode}?theme=${result.themeSlug}`;
+    ? `${base}/d/${result.challengeNumber}`
+    : `${base}/jogar/${result.mode}?theme=${result.themeSlug}`;
 
   let message: string;
   if (isDaily) {
