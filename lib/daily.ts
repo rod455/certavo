@@ -37,8 +37,9 @@ export function dailySeed(date: string): string {
  * Deterministically select the daily questions from a pool. The server runs
  * this exact function against the same pool to validate a submitted score.
  *
- * Option order is also shuffled deterministically so everyone sees the same
- * board, while `correct_index` is remapped accordingly.
+ * Option order is kept exactly as generated (the generators already shuffle
+ * options deterministically per question id) so the board matches the seeded
+ * `correct_index` — which is what the server uses to revalidate the score.
  */
 export function selectDailyQuestions(
   pool: readonly Question[],
@@ -46,8 +47,7 @@ export function selectDailyQuestions(
   count: number = DAILY_QUESTION_COUNT,
 ): Question[] {
   const rng = seededRng(dailySeed(date));
-  const chosen = pickN(pool, count, rng);
-  return chosen.map((q, i) => shuffleOptions(q, seededRng(`${dailySeed(date)}:${i}`)));
+  return pickN(pool, count, rng);
 }
 
 /** Shuffle a question's options deterministically, keeping the answer correct. */
