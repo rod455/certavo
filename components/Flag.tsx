@@ -1,4 +1,3 @@
-import * as Flags from 'country-flag-icons/react/3x2';
 import { hasFlag } from 'country-flag-icons';
 
 /** Convert an ISO 3166-1 alpha-2 code to its emoji flag (fallback). */
@@ -10,6 +9,11 @@ export function flagEmoji(code: string): string {
   );
 }
 
+/**
+ * Renders a flag as a static, lazy-loaded SVG image from /public/flags. This
+ * keeps every flag out of the JS bundle (only the visible ones are fetched),
+ * which makes the game pages much lighter than bundling ~250 flag components.
+ */
 export function Flag({
   code,
   className = '',
@@ -20,17 +24,21 @@ export function Flag({
   title?: string;
 }) {
   const cc = code.toUpperCase();
-  const Svg = (Flags as Record<string, React.ComponentType<{ title?: string }>>)[
-    cc
-  ];
-  if (Svg && hasFlag(cc)) {
+  if (hasFlag(cc)) {
     return (
       <span
         className={`block overflow-hidden rounded-md border-2 border-navy/15 shadow-sm ${className}`}
         role="img"
         aria-label={title ?? cc}
       >
-        <Svg title={title ?? cc} />
+        <img
+          src={`/flags/${cc}.svg`}
+          alt={title ?? cc}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="h-full w-full object-cover"
+        />
       </span>
     );
   }
