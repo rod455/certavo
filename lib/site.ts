@@ -12,8 +12,11 @@ export const SITE_TAGLINE = {
   es: 'El quiz visual de cada día',
 } as const;
 
+// Defaults to the live deployment so OG previews / sitemap / canonical resolve
+// even without env vars. Override with NEXT_PUBLIC_SITE_URL for a custom domain.
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://certavo.app';
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+  'https://certavo.vercel.app';
 
 /**
  * Absolute URL of the app logo for metadata (JSON-LD, OG fallback). Override

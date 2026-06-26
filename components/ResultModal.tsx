@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { GameResult } from '@/lib/types';
-import { whatsappLink, shareOrCopy, tryShareImage, isMobile } from '@/lib/share';
+import { whatsappLink, shareOrCopy } from '@/lib/share';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { submitScore, getLeaderboard, type LeaderboardRow } from '@/lib/scores';
 import { getNick, setNick } from '@/lib/anon';
@@ -88,21 +88,10 @@ export function ResultModal({
   }
   const shareText = `${message}\n${url}`;
 
-  const imageTitle = isDaily ? `${tm('daily')} #${result.challengeNumber}` : tm(result.mode);
-  const imageUrl =
-    `${origin}/api/og?kind=result&locale=${locale}` +
-    `&title=${encodeURIComponent(imageTitle)}` +
-    `&h=${encodeURIComponent(headline)}` +
-    `&sub=${encodeURIComponent(subLabel)}` +
-    `&m=${encodeURIComponent(message)}`;
-
-  async function handleWhatsApp() {
-    // Mobile: share the result image with the link in the caption (shareText).
-    // Desktop: open WhatsApp directly (no OS share sheet).
-    if (isMobile()) {
-      const shared = await tryShareImage(imageUrl, shareText);
-      if (shared) return;
-    }
+  function handleWhatsApp() {
+    // Always send text + link (WhatsApp drops the caption when an image file is
+    // attached). The link unfurls into a rich preview, so the visual is kept
+    // and the link stays clickable on every platform.
     window.open(whatsappLink(shareText), '_blank', 'noopener');
   }
 
