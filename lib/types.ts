@@ -26,7 +26,7 @@ export type Question = {
   option_media?: { type: MediaType; values: (string | null)[] } | null;
 };
 
-export type GameMode = 'daily' | 'time_attack' | 'sudden_death';
+export type GameMode = 'daily' | 'time_attack' | 'sudden_death' | 'final';
 
 export type ThemeSlug = 'flags' | 'sports' | (string & {});
 

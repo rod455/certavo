@@ -52,7 +52,8 @@ export function createGame(mode: GameMode, deck: Question[]): GameState {
     streak: 0,
     correctCount: 0,
     answers: [],
-    timeLeftMs: mode === 'time_attack' ? ENGINE.timeAttack.startMs : 0,
+    timeLeftMs:
+      mode === 'time_attack' || mode === 'final' ? ENGINE.timeAttack.startMs : 0,
     finished: deck.length === 0,
   };
 }
@@ -101,8 +102,11 @@ export function answer(
 
   const nextIndex = state.index + 1;
   const outOfQuestions = nextIndex >= state.deck.length;
-  const suddenDeathOver = state.mode === 'sudden_death' && !correct;
-  const timeOver = state.mode === 'time_attack' && timeLeftMs <= 0;
+  // Final = sudden death ON the clock: one miss ends it, time can also end it.
+  const suddenDeathOver =
+    (state.mode === 'sudden_death' || state.mode === 'final') && !correct;
+  const timeOver =
+    (state.mode === 'time_attack' || state.mode === 'final') && timeLeftMs <= 0;
 
   const next: GameState = {
     ...state,

@@ -50,9 +50,10 @@ export function GameBoard({
 
   const q = currentQuestion(state);
 
-  // Time Attack countdown.
+  // Countdown — Time Attack and the Final both race a 60s clock.
+  const timed = mode === 'time_attack' || mode === 'final';
   useEffect(() => {
-    if (mode !== 'time_attack' || state.finished) return;
+    if (!timed || state.finished) return;
     const id = setInterval(() => {
       setState((s) => {
         const next = Math.max(0, s.timeLeftMs - 100);
@@ -61,7 +62,7 @@ export function GameBoard({
       });
     }, 100);
     return () => clearInterval(id);
-  }, [mode, state.finished]);
+  }, [timed, state.finished]);
 
   // Reset the per-question timer whenever a new question shows.
   useEffect(() => {
@@ -145,13 +146,13 @@ export function GameBoard({
             : `${tc('score')} ${state.score}`}
         </span>
         <span className="font-bold">
-          {mode === 'sudden_death'
+          {mode === 'sudden_death' || mode === 'final'
             ? `${tc('streak')} ${state.bestCombo}`
             : `${tc('score')} ${state.score}`}
         </span>
       </div>
 
-      {mode === 'time_attack' && (
+      {timed && (
         <Timer msLeft={state.timeLeftMs} totalMs={ENGINE.timeAttack.startMs} />
       )}
 

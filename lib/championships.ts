@@ -62,8 +62,8 @@ export type KnockoutRound = {
 export type FinalPlayer = {
   anon: string;
   nick: string | null;
-  sd: number;
-  ta: number;
+  correct: number; // best correct answers in the Final (1 min, sudden death)
+  played: boolean;
 };
 export type KnockoutState = {
   phase: 'pending' | 'rounds' | 'final' | 'finished';
@@ -76,9 +76,10 @@ export type KnockoutState = {
 
 /**
  * Knockout: each PAST day the lowest scorer in the round game is eliminated
- * (ties → higher seed out) until 2 remain; then a final played in BOTH modes
- * (sudden death + time attack) on the theme — most legs won takes it, sudden
- * death breaks a 1-1. Today's round is "live" (no elimination yet).
+ * (ties → higher seed out) until 2 remain; then a single Final on the theme —
+ * one minute on the clock AND sudden death (one miss ends it). Whoever answers
+ * the most correctly (without missing) wins; a tie goes to the lower seed.
+ * Today's round is "live" (no elimination yet).
  */
 export function computeKnockout(opts: {
   startDate: string;
@@ -86,8 +87,8 @@ export function computeKnockout(opts: {
   theme: string | null;
   participants: Participant[];
   roundMetric: Record<string, number>; // `${anon}:${date}` -> best in round mode
-  finalSD: Record<string, number>; // best sudden-death streak on theme
-  finalTA: Record<string, number>; // best time-attack score on theme
+  finalScore: Record<string, number>; // best correct in the Final on theme
+  finalPlayed: Record<string, boolean>; // has played the Final at least once
 }): KnockoutState {
   const dc = (anon: string, date: string) =>
     opts.roundMetric[`${anon}:${date}`] ?? 0;
@@ -148,29 +149,28 @@ export function computeKnockout(opts: {
     };
   }
 
-  // Final: both modes. Each finalist's best sudden-death streak + time-attack
-  // score on the theme. Win a leg by being strictly higher; most legs wins;
-  // sudden death breaks a 1-1. Decided only once both have played both modes.
-  const players: FinalPlayer[] = alive.map((p) => ({
-    anon: p.anon,
-    nick: p.nick,
-    sd: opts.finalSD[p.anon] ?? 0,
-    ta: opts.finalTA[p.anon] ?? 0,
-  }));
+  // Final: one hybrid game — 60s + sudden death. Each finalist's best run of
+  // correct answers. Most correct wins; ties go to the lower seed. Decided only
+  // once BOTH finalists have played the Final at least once.
+  const players: FinalPlayer[] = alive
+    .map((p) => ({
+      anon: p.anon,
+      nick: p.nick,
+      correct: opts.finalScore[p.anon] ?? 0,
+      played: opts.finalPlayed[p.anon] === true,
+    }))
+    .sort((x, y) => y.correct - x.correct);
   let winner: KnockoutState['winner'] = null;
   let phase: KnockoutState['phase'] = 'final';
-  const [a, b] = players;
-  const bothPlayed = players.every((p) => p.sd > 0 && p.ta > 0);
+  const bothPlayed = players.every((p) => p.played);
   if (bothPlayed) {
-    const legsA = (a.sd > b.sd ? 1 : 0) + (a.ta > b.ta ? 1 : 0);
-    const legsB = (b.sd > a.sd ? 1 : 0) + (b.ta > a.ta ? 1 : 0);
-    let champ: FinalPlayer | null = null;
-    if (legsA !== legsB) champ = legsA > legsB ? a : b;
-    else if (a.sd !== b.sd) champ = a.sd > b.sd ? a : b; // sudden death decides
-    if (champ) {
-      winner = { anon: champ.anon, nick: champ.nick };
-      phase = 'finished';
-    }
+    const [pa, pb] = alive; // alive keeps seed order
+    const ca = opts.finalScore[pa.anon] ?? 0;
+    const cb = opts.finalScore[pb.anon] ?? 0;
+    // higher correct wins; tie → lower seed (the earlier-drawn finalist)
+    const champ = ca !== cb ? (ca > cb ? pa : pb) : pa.seed <= pb.seed ? pa : pb;
+    winner = { anon: champ.anon, nick: champ.nick };
+    phase = 'finished';
   }
   return { phase, rounds, alive, eliminated, final: { theme: opts.theme, players }, winner };
 }
@@ -289,27 +289,29 @@ async function fetchRoundMetric(
   return map;
 }
 
-/** Best single value (streak or score) per anon for a mode+theme. */
-async function fetchBest(
+/**
+ * The Final results per anon on a theme: best correct run (stored as `streak`
+ * in the sudden-death-style Final) and whether they've played it at all.
+ */
+async function fetchFinalResults(
   anons: string[],
-  mode: RoundMode,
   theme: string | null,
-  field: 'streak' | 'score',
-): Promise<Record<string, number>> {
+): Promise<{ score: Record<string, number>; played: Record<string, boolean> }> {
   const sb = getSupabase();
-  const map: Record<string, number> = {};
-  if (!sb || !theme || anons.length === 0) return map;
+  const score: Record<string, number> = {};
+  const played: Record<string, boolean> = {};
+  if (!sb || !theme || anons.length === 0) return { score, played };
   const { data } = await sb
     .from('scores')
-    .select(`anon_id, ${field}`)
-    .eq('mode', mode)
+    .select('anon_id, streak')
+    .eq('mode', 'final')
     .eq('theme_slug', theme)
     .in('anon_id', anons);
-  for (const r of (data as Record<string, unknown>[]) ?? []) {
-    const anon = r.anon_id as string;
-    map[anon] = Math.max(map[anon] ?? 0, Number(r[field] ?? 0));
+  for (const r of (data as { anon_id: string; streak: number | null }[]) ?? []) {
+    played[r.anon_id] = true;
+    score[r.anon_id] = Math.max(score[r.anon_id] ?? 0, Number(r.streak ?? 0));
   }
-  return map;
+  return { score, played };
 }
 
 export type ChampionshipView =
@@ -325,10 +327,9 @@ export async function loadChampionship(
     const dailyCorrect = await fetchDailyCorrect(anons, champ.start_date);
     return { format: 'points', participants, rows: computePoints(participants, dailyCorrect) };
   }
-  const [roundMetric, finalSD, finalTA] = await Promise.all([
+  const [roundMetric, final] = await Promise.all([
     fetchRoundMetric(anons, champ.round_mode, champ.theme_slug, champ.start_date),
-    fetchBest(anons, 'sudden_death', champ.theme_slug, 'streak'),
-    fetchBest(anons, 'time_attack', champ.theme_slug, 'score'),
+    fetchFinalResults(anons, champ.theme_slug),
   ]);
   const state = computeKnockout({
     startDate: champ.start_date,
@@ -336,8 +337,8 @@ export async function loadChampionship(
     theme: champ.theme_slug,
     participants,
     roundMetric,
-    finalSD,
-    finalTA,
+    finalScore: final.score,
+    finalPlayed: final.played,
   });
   return { format: 'knockout', participants, state };
 }

@@ -42,32 +42,32 @@ describe('computeKnockout', () => {
       theme: 'worldcup',
       participants,
       roundMetric,
-      finalSD: { A: 12, C: 9 },
-      finalTA: { A: 5000, C: 3000 },
+      finalScore: { A: 9, C: 6 },
+      finalPlayed: { A: true, C: true },
     });
     expect(state.eliminated.map((e) => e.anon)).toEqual(['D', 'B']);
     expect(state.alive.map((a) => a.anon).sort()).toEqual(['A', 'C']);
     expect(state.phase).toBe('finished');
-    expect(state.winner?.anon).toBe('A'); // wins both legs
+    expect(state.winner?.anon).toBe('A'); // more correct in the Final
   });
 
-  it('breaks a 1-1 final by sudden death', () => {
+  it('breaks a tie in the final by the lower seed', () => {
     const state = computeKnockout({
       startDate: '2026-06-01', today: '2026-06-04', theme: 'worldcup', participants,
       roundMetric,
-      finalSD: { A: 12, C: 9 }, // A wins sudden death
-      finalTA: { A: 2000, C: 9000 }, // C wins time attack
+      finalScore: { A: 8, C: 8 }, // tie on correct answers
+      finalPlayed: { A: true, C: true },
     });
     expect(state.phase).toBe('finished');
-    expect(state.winner?.anon).toBe('A');
+    expect(state.winner?.anon).toBe('A'); // A is seed 1 (< C's seed 3)
   });
 
-  it('keeps the final pending until both finalists play both modes', () => {
+  it('keeps the final pending until both finalists have played it', () => {
     const state = computeKnockout({
       startDate: '2026-06-01', today: '2026-06-04', theme: 'worldcup', participants,
       roundMetric,
-      finalSD: { A: 12, C: 9 },
-      finalTA: { A: 5000 }, // C hasn't played time attack yet
+      finalScore: { A: 8 },
+      finalPlayed: { A: true }, // C hasn't played the Final yet
     });
     expect(state.phase).toBe('final');
     expect(state.winner).toBeNull();
@@ -76,7 +76,7 @@ describe('computeKnockout', () => {
   it('marks today as a live round before eliminating', () => {
     const state = computeKnockout({
       startDate: '2026-06-03', today: '2026-06-03', theme: null, participants,
-      roundMetric: {}, finalSD: {}, finalTA: {},
+      roundMetric: {}, finalScore: {}, finalPlayed: {},
     });
     expect(state.phase).toBe('rounds');
     expect(state.rounds.at(-1)?.live).toBe(true);

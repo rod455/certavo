@@ -119,17 +119,17 @@ function KnockoutBoard({
       {/* visual bracket — eliminated fade out */}
       <KnockoutBracket participants={view.participants} state={s} />
 
-      {/* final — both modes */}
+      {/* final — single hybrid game: 1 min + sudden death, most correct wins */}
       {s.final && (
         <section className="rounded-card border-2 border-navy bg-navy p-4 text-paper">
           <h2 className="text-center font-sans font-bold">{t('final')}</h2>
-          <p className="mb-2 text-center text-sm text-paper/80">{t('finalBoth')}</p>
+          <p className="mb-2 text-center text-sm text-paper/80">{t('finalRules')}</p>
           <ol>
             {s.final.players.map((p) => (
               <li key={p.anon} className="flex items-center justify-between px-2 py-1">
                 <span>{p.nick ?? 'Anon'}</span>
                 <span className="font-mono text-sm">
-                  {p.sd} {t('streakShort')} · {p.ta} pts
+                  {p.played ? `${p.correct} ${t('correctShort')}` : t('notPlayed')}
                 </span>
               </li>
             ))}
@@ -137,20 +137,12 @@ function KnockoutBoard({
           {!s.winner && (
             <p className="mt-1 text-center text-xs text-paper/70">{t('waitingFinal')}</p>
           )}
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link
-              href={`/jogar/sudden_death?theme=${champ.theme_slug}`}
-              className="btn-primary text-center text-sm"
-            >
-              {t('playFinalSD')}
-            </Link>
-            <Link
-              href={`/jogar/time_attack?theme=${champ.theme_slug}`}
-              className="btn-ghost text-center text-sm"
-            >
-              {t('playFinalTA')}
-            </Link>
-          </div>
+          <Link
+            href={`/jogar/final?theme=${champ.theme_slug}`}
+            className="btn-primary mt-3 block w-full text-center"
+          >
+            {t('playFinal')}
+          </Link>
         </section>
       )}
 

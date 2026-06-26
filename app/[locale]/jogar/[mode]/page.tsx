@@ -8,7 +8,7 @@ import { type ThemeKey, THEMES } from '@/lib/content';
 import { PracticeGame } from '@/components/PracticeGame';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
-const VALID_MODES: GameMode[] = ['time_attack', 'sudden_death'];
+const VALID_MODES: GameMode[] = ['time_attack', 'sudden_death', 'final'];
 
 export async function generateMetadata({
   params: { locale, mode },
