@@ -6,7 +6,6 @@ import type { GameResult, Question } from '@/lib/types';
 import { GameBoard } from './GameBoard';
 import { ResultModal } from './ResultModal';
 import { hasPlayedDaily, getDailyResult } from '@/lib/anon';
-import { submitScore } from '@/lib/scores';
 
 type StoredDaily = {
   score: number;
@@ -42,6 +41,7 @@ export function DailyGame({
           total: deck.length,
           streak: 0,
           answers: stored.answers,
+          durationMs: 0,
           challengeDate,
           challengeNumber,
           challengeName,
@@ -57,7 +57,7 @@ export function DailyGame({
 
   if (status === 'done') {
     return prior ? (
-      <ResultModal result={prior} />
+      <ResultModal result={prior} allowSave={false} />
     ) : (
       <p className="rounded-card border-2 border-navy/15 bg-paper-2 p-6 text-center">
         {t('alreadyPlayed')} {t('comeBackTomorrow')}
@@ -73,7 +73,6 @@ export function DailyGame({
       challengeDate={challengeDate}
       challengeNumber={challengeNumber}
       challengeName={challengeName}
-      onFinish={(r) => void submitScore(r)}
     />
   );
 }

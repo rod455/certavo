@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { GameMode, GameResult, Question, ThemeSlug } from '@/lib/types';
+import type { GameMode, Question, ThemeSlug } from '@/lib/types';
 import { GameBoard } from './GameBoard';
-import { submitScore } from '@/lib/scores';
 
 const DECK_SIZE = 40;
 
@@ -34,16 +33,5 @@ export function PracticeGame({
     [seed],
   );
 
-  function handleFinish(result: GameResult) {
-    void submitScore(result);
-  }
-
-  return (
-    <GameBoard
-      mode={mode}
-      deck={deck}
-      themeSlug={themeSlug}
-      onFinish={handleFinish}
-    />
-  );
+  return <GameBoard mode={mode} deck={deck} themeSlug={themeSlug} />;
 }

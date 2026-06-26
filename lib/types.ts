@@ -46,6 +46,7 @@ export type GameResult = {
   total: number;
   streak: number;
   answers: AnswerRecord[];
+  durationMs: number; // wall-clock play time
   challengeDate?: string; // YYYY-MM-DD (daily only)
   challengeNumber?: number; // daily only
   challengeName?: string; // localized edition name (daily only)

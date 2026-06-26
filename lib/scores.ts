@@ -19,24 +19,37 @@ export type LeaderboardRow = {
  * No-op when the backend isn't configured — the game stays fully playable
  * offline.
  */
-export async function submitScore(result: GameResult): Promise<boolean> {
+export type SubmitResult = { ok: boolean; rank?: number; score?: number };
+
+export async function submitScore(
+  result: GameResult,
+  nick?: string,
+): Promise<SubmitResult> {
   const supabase = getSupabase();
-  if (!supabase) return false;
+  if (!supabase) return { ok: false };
   try {
-    const { error } = await supabase.functions.invoke('submit_score', {
+    const { data, error } = await supabase.functions.invoke('submit_score', {
       body: {
         anon_id: getAnonId(),
+        nick: nick?.trim() || null,
         mode: result.mode,
         theme_slug: result.themeSlug,
         challenge_date: result.challengeDate ?? null,
         score: result.score,
         streak: result.streak,
-        details: { answers: result.answers, correctCount: result.correctCount },
+        details: {
+          answers: result.answers,
+          correctCount: result.correctCount,
+          total: result.total,
+          durationMs: result.durationMs,
+        },
       },
     });
-    return !error;
+    if (error) return { ok: false };
+    const d = (data ?? {}) as { ok?: boolean; rank?: number; score?: number };
+    return { ok: d.ok !== false, rank: d.rank, score: d.score };
   } catch {
-    return false;
+    return { ok: false };
   }
 }
 

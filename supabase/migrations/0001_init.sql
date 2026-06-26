@@ -56,6 +56,7 @@ create table if not exists scores (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete set null,  -- null = anon
   anon_id text,
+  nick text,                                   -- chosen display name for anon
   mode text not null,                          -- daily|time_attack|sudden_death
   theme_slug text,
   challenge_date date,

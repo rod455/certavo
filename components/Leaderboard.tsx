@@ -4,52 +4,55 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getLeaderboard, type LeaderboardRow } from '@/lib/scores';
 import { isBackendConfigured } from '@/lib/supabase/client';
+import type { GameMode } from '@/lib/types';
 
-type Period = 'daily' | 'weekly' | 'all';
+// Each mode ranks within its natural window / metric.
+const TABS: { mode: GameMode; period: 'daily' | 'weekly' | 'all'; metric: 'score' | 'streak' }[] =
+  [
+    { mode: 'daily', period: 'daily', metric: 'score' },
+    { mode: 'time_attack', period: 'weekly', metric: 'score' },
+    { mode: 'sudden_death', period: 'all', metric: 'streak' },
+  ];
 
 export function Leaderboard() {
   const t = useTranslations('ranking');
-  const [period, setPeriod] = useState<Period>('daily');
+  const tm = useTranslations('modes');
+  const [tab, setTab] = useState(0);
   const [rows, setRows] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const active = TABS[tab];
+
   useEffect(() => {
-    let active = true;
+    let on = true;
     setLoading(true);
-    const mode = period === 'weekly' ? 'time_attack' : 'daily';
-    getLeaderboard(mode, period).then((r) => {
-      if (active) {
+    getLeaderboard(active.mode, active.period).then((r) => {
+      if (on) {
         setRows(r);
         setLoading(false);
       }
     });
     return () => {
-      active = false;
+      on = false;
     };
-  }, [period]);
-
-  const tabs: { key: Period; label: string }[] = [
-    { key: 'daily', label: t('daily') },
-    { key: 'weekly', label: t('weekly') },
-    { key: 'all', label: t('allTime') },
-  ];
+  }, [active.mode, active.period]);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2" role="tablist">
-        {tabs.map((tab) => (
+      <div className="grid grid-cols-3 gap-2" role="tablist">
+        {TABS.map((tabDef, i) => (
           <button
-            key={tab.key}
+            key={tabDef.mode}
             role="tab"
-            aria-selected={period === tab.key}
-            onClick={() => setPeriod(tab.key)}
-            className={`btn flex-1 ${
-              period === tab.key
+            aria-selected={tab === i}
+            onClick={() => setTab(i)}
+            className={`btn px-2 text-sm ${
+              tab === i
                 ? 'bg-navy text-paper shadow-none'
                 : 'bg-paper text-navy shadow-tactile-sm'
             }`}
           >
-            {tab.label}
+            {tm(tabDef.mode)}
           </button>
         ))}
       </div>
@@ -75,7 +78,9 @@ export function Leaderboard() {
                 <span className="w-6 font-mono font-bold">{row.rank}</span>
                 <span>{row.name ?? t('anon')}</span>
               </span>
-              <span className="font-mono font-bold text-teal">{row.score}</span>
+              <span className="font-mono font-bold text-teal">
+                {active.metric === 'streak' ? (row.streak ?? 0) : row.score}
+              </span>
             </li>
           ))}
         </ol>

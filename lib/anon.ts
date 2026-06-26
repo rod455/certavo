@@ -8,6 +8,7 @@
  * which is validated and stored server-side.
  */
 const ANON_KEY = 'certavo:anon-id';
+const NICK_KEY = 'certavo:nick';
 const DAILY_DONE_PREFIX = 'certavo:daily-done:';
 
 function uuid(): string {
@@ -25,6 +26,16 @@ export function getAnonId(): string {
     window.localStorage.setItem(ANON_KEY, id);
   }
   return id;
+}
+
+export function getNick(): string {
+  if (typeof window === 'undefined') return '';
+  return window.localStorage.getItem(NICK_KEY) ?? '';
+}
+
+export function setNick(nick: string): void {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(NICK_KEY, nick.slice(0, 24));
 }
 
 export function hasPlayedDaily(date: string): boolean {

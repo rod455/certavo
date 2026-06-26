@@ -45,6 +45,7 @@ export function GameBoard({
   const [chosen, setChosen] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
   const startedAt = useRef<number>(Date.now());
+  const gameStartedAt = useRef<number>(Date.now());
   const lockRef = useRef(false);
 
   const q = currentQuestion(state);
@@ -78,6 +79,7 @@ export function GameBoard({
         total: mode === 'daily' ? deck.length : s.answers.length,
         streak: s.bestCombo,
         answers: s.answers,
+        durationMs: Date.now() - gameStartedAt.current,
         challengeDate,
         challengeNumber,
         challengeName,
