@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 200" role="img" aria-label="Certavo">
+  <rect x="4" y="4" width="192" height="192" rx="42" fill="#1C2B3A"/>
+  <circle cx="100" cy="100" r="58" fill="none" stroke="#18A06B" stroke-width="17"/>
+  <circle cx="100" cy="100" r="26" fill="#18A06B"/>
+  <circle cx="100" cy="100" r="12" fill="#F6F2EA"/>
+  <text x="232" y="132" font-family="'Schibsted Grotesk', system-ui, sans-serif"
+        font-size="120" font-weight="800" letter-spacing="-3" fill="#1C2B3A">Certavo</text>
+</svg>

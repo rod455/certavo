@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Certavo">
+  <defs>
+    <clipPath id="r"><rect width="512" height="512" rx="112" ry="112"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="512" height="512" fill="#1C2B3A"/>
+    <circle cx="256" cy="256" r="150" fill="none" stroke="#18A06B" stroke-width="44"/>
+    <circle cx="256" cy="256" r="66" fill="#18A06B"/>
+    <circle cx="256" cy="256" r="30" fill="#F6F2EA"/>
+  </g>
+</svg>
