@@ -11,6 +11,7 @@ import {
   type Championship,
   type ChampionshipView as View,
 } from '@/lib/championships';
+import { KnockoutBracket } from './KnockoutBracket';
 
 function Row({
   rank,
@@ -115,19 +116,8 @@ function KnockoutBoard({
       )}
       {s.phase === 'pending' && <p className="text-navy-soft">{t('pending')}</p>}
 
-      {/* alive / eliminated */}
-      {s.alive.length > 0 && (
-        <section>
-          <h2 className="mb-1 font-mono text-xs uppercase tracking-wide text-navy-soft">
-            {t('alive')}
-          </h2>
-          <ol className="overflow-hidden rounded-card border-2 border-navy/15 bg-paper-2">
-            {s.alive.map((p) => (
-              <Row key={p.anon} name={p.nick} value={`#${p.seed}`} />
-            ))}
-          </ol>
-        </section>
-      )}
+      {/* visual bracket — eliminated fade out */}
+      <KnockoutBracket participants={view.participants} state={s} />
 
       {/* final — both modes */}
       {s.final && (

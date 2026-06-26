@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { NotificationBell } from './NotificationBell';
 import { Logo } from './Logo';
 
 export async function SiteHeader() {
@@ -18,6 +19,7 @@ export async function SiteHeader() {
           <Link href="/ranking" className="font-medium hover:text-teal">
             {t('ranking')}
           </Link>
+          <NotificationBell />
           <LanguageSwitcher />
         </nav>
       </div>

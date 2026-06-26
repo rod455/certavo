@@ -75,7 +75,20 @@
     "streakShort": "racha",
     "playDaily": "Jugar el Desafío del Día",
     "playFinal": "Jugar la final (Muerte Súbita)",
-    "unavailable": "No disponible ahora."
+    "unavailable": "No disponible ahora.",
+    "bracket": "Llave (sorteo)",
+    "finalBadge": "Final",
+    "championBadge": "Campeón",
+    "outRound": "R{n}",
+    "you": "tú"
+  },
+  "notif": {
+    "title": "Notificaciones",
+    "empty": "Nada por aquí aún.",
+    "champion": "🏆 ¡Ganaste {champ}!",
+    "final": "🔥 ¡Estás en la final de {champ}!",
+    "eliminated": "Quedaste eliminado de {champ} (ronda {n}).",
+    "turn": "Juega la ronda de hoy en {champ}."
   },
   "home": {
     "title": "El quiz visual de cada día",

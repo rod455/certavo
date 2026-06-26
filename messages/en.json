@@ -75,7 +75,20 @@
     "streakShort": "streak",
     "playDaily": "Play the Daily Challenge",
     "playFinal": "Play the final (Sudden Death)",
-    "unavailable": "Unavailable right now."
+    "unavailable": "Unavailable right now.",
+    "bracket": "Bracket (draw)",
+    "finalBadge": "Final",
+    "championBadge": "Champion",
+    "outRound": "R{n}",
+    "you": "you"
+  },
+  "notif": {
+    "title": "Notifications",
+    "empty": "Nothing here yet.",
+    "champion": "🏆 You won {champ}!",
+    "final": "🔥 You're in the final of {champ}!",
+    "eliminated": "You were eliminated from {champ} (round {n}).",
+    "turn": "Play today's round in {champ}."
   },
   "home": {
     "title": "The daily visual quiz",
