@@ -13,19 +13,24 @@ import {
   type GroupSummary,
   type GroupRow,
 } from '@/lib/groups';
+import { listChampionships, type Championship } from '@/lib/championships';
+import { ChampionshipCreate } from './ChampionshipCreate';
 
 export function GroupView({ code }: { code: string }) {
   const t = useTranslations('groups');
+  const tc = useTranslations('champ');
   const locale = useLocale();
   const [group, setGroup] = useState<GroupSummary | null>(null);
   const [rows, setRows] = useState<GroupRow[]>([]);
   const [nick, setNickInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [champs, setChamps] = useState<Championship[]>([]);
 
   const refresh = useCallback(() => {
     getGroup(code).then(setGroup);
     getGroupLeaderboard(code).then(setRows);
+    listChampionships(code).then(setChamps);
   }, [code]);
 
   useEffect(() => {
@@ -127,6 +132,35 @@ export function GroupView({ code }: { code: string }) {
           ))}
         </ol>
       </section>
+
+      {/* championships */}
+      {group.isMember && (
+        <section className="flex flex-col gap-2">
+          <h2 className="font-mono text-xs uppercase tracking-wide text-navy-soft">
+            {tc('title')}
+          </h2>
+          {champs.length === 0 ? (
+            <p className="text-sm text-navy-soft">{tc('empty')}</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {champs.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    href={`/c/${c.id}`}
+                    className="flex items-center justify-between rounded-card border-2 border-navy/15 bg-paper-2 p-3 shadow-tactile-sm"
+                  >
+                    <span className="font-sans font-bold">{c.name}</span>
+                    <span className="font-mono text-xs text-navy-soft">
+                      {tc(c.format)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+          <ChampionshipCreate code={code} />
+        </section>
+      )}
 
       <Link href="/" className="btn-primary w-full text-center">
         {t('playNow')}
