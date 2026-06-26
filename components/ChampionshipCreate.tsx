@@ -9,17 +9,22 @@ import {
   createChampionship,
   type Member,
   type Format,
+  type RoundMode,
 } from '@/lib/championships';
+
+const ROUND_MODES: RoundMode[] = ['sudden_death', 'time_attack'];
 
 const THEME_KEYS = Object.keys(THEMES);
 
 export function ChampionshipCreate({ code }: { code: string }) {
   const t = useTranslations('champ');
   const tt = useTranslations('themes');
+  const tm = useTranslations('modes');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [format, setFormat] = useState<Format>('points');
+  const [roundMode, setRoundMode] = useState<RoundMode>('sudden_death');
   const [theme, setTheme] = useState(THEME_KEYS[0]);
   const [members, setMembers] = useState<Member[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -57,6 +62,7 @@ export function ChampionshipCreate({ code }: { code: string }) {
       name: name.trim() || t('title'),
       format,
       theme: format === 'knockout' ? theme : null,
+      roundMode,
       members: picked,
     });
     setBusy(false);
@@ -100,20 +106,38 @@ export function ChampionshipCreate({ code }: { code: string }) {
       </p>
 
       {format === 'knockout' && (
-        <label className="text-sm">
-          {t('finalTheme')}
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            className="mt-1 min-h-[44px] w-full rounded-card border-2 border-navy/20 bg-paper px-2"
-          >
-            {THEME_KEYS.map((k) => (
-              <option key={k} value={k}>
-                {tt(k as never)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <>
+          <div>
+            <p className="mb-1 text-sm font-bold">{t('roundMode')}</p>
+            <div className="flex gap-2">
+              {ROUND_MODES.map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setRoundMode(m)}
+                  className={`btn flex-1 text-sm ${
+                    roundMode === m ? 'bg-navy text-paper shadow-none' : 'bg-paper text-navy'
+                  }`}
+                >
+                  {tm(m)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="text-sm">
+            {t('finalTheme')}
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              className="mt-1 min-h-[44px] w-full rounded-card border-2 border-navy/20 bg-paper px-2"
+            >
+              {THEME_KEYS.map((k) => (
+                <option key={k} value={k}>
+                  {tt(k as never)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
       )}
 
       <div>

@@ -30,35 +30,44 @@ describe('computePoints', () => {
 describe('computeKnockout', () => {
   const participants = [P('A', 1), P('B', 2), P('C', 3), P('D', 4)];
 
-  it('eliminates the lowest daily scorer each past day, then crowns the final', () => {
+  const roundMetric = {
+    'A:2026-06-01': 8, 'B:2026-06-01': 7, 'C:2026-06-01': 5, 'D:2026-06-01': 3,
+    'A:2026-06-02': 6, 'B:2026-06-02': 4, 'C:2026-06-02': 9,
+  };
+
+  it('eliminates the lowest round scorer each past day, then crowns the final', () => {
     const state = computeKnockout({
       startDate: '2026-06-01',
       today: '2026-06-04',
       theme: 'worldcup',
       participants,
-      dailyCorrect: {
-        'A:2026-06-01': 8, 'B:2026-06-01': 7, 'C:2026-06-01': 5, 'D:2026-06-01': 3,
-        'A:2026-06-02': 6, 'B:2026-06-02': 4, 'C:2026-06-02': 9,
-      },
-      suddenStreak: { A: 12, C: 9 },
+      roundMetric,
+      finalSD: { A: 12, C: 9 },
+      finalTA: { A: 5000, C: 3000 },
     });
     expect(state.eliminated.map((e) => e.anon)).toEqual(['D', 'B']);
     expect(state.alive.map((a) => a.anon).sort()).toEqual(['A', 'C']);
     expect(state.phase).toBe('finished');
+    expect(state.winner?.anon).toBe('A'); // wins both legs
+  });
+
+  it('breaks a 1-1 final by sudden death', () => {
+    const state = computeKnockout({
+      startDate: '2026-06-01', today: '2026-06-04', theme: 'worldcup', participants,
+      roundMetric,
+      finalSD: { A: 12, C: 9 }, // A wins sudden death
+      finalTA: { A: 2000, C: 9000 }, // C wins time attack
+    });
+    expect(state.phase).toBe('finished');
     expect(state.winner?.anon).toBe('A');
   });
 
-  it('keeps the final pending until both finalists play sudden death', () => {
+  it('keeps the final pending until both finalists play both modes', () => {
     const state = computeKnockout({
-      startDate: '2026-06-01',
-      today: '2026-06-04',
-      theme: 'worldcup',
-      participants,
-      dailyCorrect: {
-        'A:2026-06-01': 8, 'B:2026-06-01': 7, 'C:2026-06-01': 5, 'D:2026-06-01': 3,
-        'A:2026-06-02': 6, 'B:2026-06-02': 4, 'C:2026-06-02': 9,
-      },
-      suddenStreak: { A: 12 }, // C hasn't played the final yet
+      startDate: '2026-06-01', today: '2026-06-04', theme: 'worldcup', participants,
+      roundMetric,
+      finalSD: { A: 12, C: 9 },
+      finalTA: { A: 5000 }, // C hasn't played time attack yet
     });
     expect(state.phase).toBe('final');
     expect(state.winner).toBeNull();
@@ -66,12 +75,8 @@ describe('computeKnockout', () => {
 
   it('marks today as a live round before eliminating', () => {
     const state = computeKnockout({
-      startDate: '2026-06-03',
-      today: '2026-06-03',
-      theme: null,
-      participants,
-      dailyCorrect: {},
-      suddenStreak: {},
+      startDate: '2026-06-03', today: '2026-06-03', theme: null, participants,
+      roundMetric: {}, finalSD: {}, finalTA: {},
     });
     expect(state.phase).toBe('rounds');
     expect(state.rounds.at(-1)?.live).toBe(true);

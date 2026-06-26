@@ -7,7 +7,7 @@ export const ENGINE = {
   maxComboSteps: 9,
   comboStep: 0.25,
   timeAttack: {
-    startMs: 45_000,
+    startMs: 60_000,
     wrongPenaltyMs: 4_000,
     correctBonusBaseMs: 1_200,
     correctBonusPerComboMs: 300,

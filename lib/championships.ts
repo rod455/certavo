@@ -6,11 +6,13 @@ import { todayUtc } from './daily';
 
 export type Format = 'points' | 'knockout';
 export type Participant = { anon: string; nick: string | null; seed: number };
+export type RoundMode = 'sudden_death' | 'time_attack';
 export type Championship = {
   id: string;
   name: string;
   format: Format;
   theme_slug: string | null;
+  round_mode: RoundMode;
   start_date: string;
 };
 export type Member = { anon_id: string; nick: string | null };
@@ -54,36 +56,41 @@ export type KnockoutRound = {
   round: number;
   date: string;
   live: boolean;
-  standings: { anon: string; nick: string | null; correct: number }[];
+  standings: { anon: string; nick: string | null; value: number }[];
   eliminated: { anon: string; nick: string | null } | null;
+};
+export type FinalPlayer = {
+  anon: string;
+  nick: string | null;
+  sd: number;
+  ta: number;
 };
 export type KnockoutState = {
   phase: 'pending' | 'rounds' | 'final' | 'finished';
   rounds: KnockoutRound[];
   alive: Participant[];
   eliminated: { anon: string; nick: string | null; round: number }[];
-  final: {
-    theme: string | null;
-    players: { anon: string; nick: string | null; streak: number }[];
-  } | null;
+  final: { theme: string | null; players: FinalPlayer[] } | null;
   winner: { anon: string; nick: string | null } | null;
 };
 
 /**
- * Knockout: each PAST day the lowest daily-correct player is eliminated (ties →
- * higher seed out) until 2 remain; then a sudden-death final on the theme
- * (highest streak wins). Today's round is "live" (no elimination yet).
+ * Knockout: each PAST day the lowest scorer in the round game is eliminated
+ * (ties → higher seed out) until 2 remain; then a final played in BOTH modes
+ * (sudden death + time attack) on the theme — most legs won takes it, sudden
+ * death breaks a 1-1. Today's round is "live" (no elimination yet).
  */
 export function computeKnockout(opts: {
   startDate: string;
   today: string;
   theme: string | null;
   participants: Participant[];
-  dailyCorrect: Record<string, number>;
-  suddenStreak: Record<string, number>;
+  roundMetric: Record<string, number>; // `${anon}:${date}` -> best in round mode
+  finalSD: Record<string, number>; // best sudden-death streak on theme
+  finalTA: Record<string, number>; // best time-attack score on theme
 }): KnockoutState {
   const dc = (anon: string, date: string) =>
-    opts.dailyCorrect[`${anon}:${date}`] ?? 0;
+    opts.roundMetric[`${anon}:${date}`] ?? 0;
   let alive = [...opts.participants].sort((a, b) => a.seed - b.seed);
   const rounds: KnockoutRound[] = [];
   const eliminated: KnockoutState['eliminated'] = [];
@@ -96,8 +103,8 @@ export function computeKnockout(opts: {
   let date = opts.startDate;
   while (alive.length > 2 && date < opts.today) {
     const standings = alive
-      .map((p) => ({ anon: p.anon, nick: p.nick, correct: dc(p.anon, date) }))
-      .sort((a, b) => b.correct - a.correct);
+      .map((p) => ({ anon: p.anon, nick: p.nick, value: dc(p.anon, date) }))
+      .sort((a, b) => b.value - a.value);
     let loser = alive[0];
     let worst = Infinity;
     let worstSeed = -1;
@@ -124,8 +131,8 @@ export function computeKnockout(opts: {
 
   if (alive.length > 2) {
     const standings = alive
-      .map((p) => ({ anon: p.anon, nick: p.nick, correct: dc(p.anon, opts.today) }))
-      .sort((a, b) => b.correct - a.correct);
+      .map((p) => ({ anon: p.anon, nick: p.nick, value: dc(p.anon, opts.today) }))
+      .sort((a, b) => b.value - a.value);
     rounds.push({ round, date: opts.today, live: true, standings, eliminated: null });
     return { phase: 'rounds', rounds, alive, eliminated, final: null, winner: null };
   }
@@ -141,18 +148,29 @@ export function computeKnockout(opts: {
     };
   }
 
-  const players = alive.map((p) => ({
+  // Final: both modes. Each finalist's best sudden-death streak + time-attack
+  // score on the theme. Win a leg by being strictly higher; most legs wins;
+  // sudden death breaks a 1-1. Decided only once both have played both modes.
+  const players: FinalPlayer[] = alive.map((p) => ({
     anon: p.anon,
     nick: p.nick,
-    streak: opts.suddenStreak[p.anon] ?? 0,
+    sd: opts.finalSD[p.anon] ?? 0,
+    ta: opts.finalTA[p.anon] ?? 0,
   }));
-  const top = Math.max(...players.map((p) => p.streak));
-  const leaders = players.filter((p) => p.streak === top);
   let winner: KnockoutState['winner'] = null;
   let phase: KnockoutState['phase'] = 'final';
-  if (top > 0 && players.every((p) => p.streak > 0) && leaders.length === 1) {
-    winner = { anon: leaders[0].anon, nick: leaders[0].nick };
-    phase = 'finished';
+  const [a, b] = players;
+  const bothPlayed = players.every((p) => p.sd > 0 && p.ta > 0);
+  if (bothPlayed) {
+    const legsA = (a.sd > b.sd ? 1 : 0) + (a.ta > b.ta ? 1 : 0);
+    const legsB = (b.sd > a.sd ? 1 : 0) + (b.ta > a.ta ? 1 : 0);
+    let champ: FinalPlayer | null = null;
+    if (legsA !== legsB) champ = legsA > legsB ? a : b;
+    else if (a.sd !== b.sd) champ = a.sd > b.sd ? a : b; // sudden death decides
+    if (champ) {
+      winner = { anon: champ.anon, nick: champ.nick };
+      phase = 'finished';
+    }
   }
   return { phase, rounds, alive, eliminated, final: { theme: opts.theme, players }, winner };
 }
@@ -173,6 +191,7 @@ export async function createChampionship(opts: {
   name: string;
   format: Format;
   theme: string | null;
+  roundMode: RoundMode;
   members: Member[];
 }): Promise<{ ok: boolean; id?: string }> {
   const sb = getSupabase();
@@ -182,6 +201,7 @@ export async function createChampionship(opts: {
     p_name: opts.name,
     p_format: opts.format,
     p_theme: opts.theme,
+    p_round_mode: opts.roundMode,
     p_start: todayUtc(),
     p_anons: opts.members.map((m) => m.anon_id),
     p_nicks: opts.members.map((m) => m.nick ?? ''),
@@ -202,7 +222,7 @@ export async function getChampionship(id: string): Promise<Championship | null> 
   if (!sb) return null;
   const { data } = await sb
     .from('championships')
-    .select('id, name, format, theme_slug, start_date')
+    .select('id, name, format, theme_slug, round_mode, start_date')
     .eq('id', id)
     .single();
   return (data as Championship) ?? null;
@@ -242,21 +262,52 @@ async function fetchDailyCorrect(
   return map;
 }
 
-async function fetchSuddenStreak(
+/** Best round-game metric per (anon, UTC day): streak for sudden death,
+ *  score for time attack. */
+async function fetchRoundMetric(
   anons: string[],
+  mode: RoundMode,
   theme: string | null,
+  startDate: string,
 ): Promise<Record<string, number>> {
   const sb = getSupabase();
   const map: Record<string, number> = {};
   if (!sb || !theme || anons.length === 0) return map;
   const { data } = await sb
     .from('scores')
-    .select('anon_id, streak')
-    .eq('mode', 'sudden_death')
+    .select('anon_id, created_at, streak, score')
+    .eq('mode', mode)
+    .eq('theme_slug', theme)
+    .in('anon_id', anons)
+    .gte('created_at', `${startDate}T00:00:00Z`);
+  for (const r of (data as { anon_id: string; created_at: string; streak: number | null; score: number | null }[]) ?? []) {
+    const day = r.created_at.slice(0, 10);
+    const key = `${r.anon_id}:${day}`;
+    const v = Number((mode === 'sudden_death' ? r.streak : r.score) ?? 0);
+    map[key] = Math.max(map[key] ?? 0, v);
+  }
+  return map;
+}
+
+/** Best single value (streak or score) per anon for a mode+theme. */
+async function fetchBest(
+  anons: string[],
+  mode: RoundMode,
+  theme: string | null,
+  field: 'streak' | 'score',
+): Promise<Record<string, number>> {
+  const sb = getSupabase();
+  const map: Record<string, number> = {};
+  if (!sb || !theme || anons.length === 0) return map;
+  const { data } = await sb
+    .from('scores')
+    .select(`anon_id, ${field}`)
+    .eq('mode', mode)
     .eq('theme_slug', theme)
     .in('anon_id', anons);
-  for (const r of (data as { anon_id: string; streak: number | null }[]) ?? []) {
-    map[r.anon_id] = Math.max(map[r.anon_id] ?? 0, Number(r.streak ?? 0));
+  for (const r of (data as Record<string, unknown>[]) ?? []) {
+    const anon = r.anon_id as string;
+    map[anon] = Math.max(map[anon] ?? 0, Number(r[field] ?? 0));
   }
   return map;
 }
@@ -270,18 +321,23 @@ export async function loadChampionship(
 ): Promise<ChampionshipView> {
   const participants = await getParticipants(champ.id);
   const anons = participants.map((p) => p.anon);
-  const dailyCorrect = await fetchDailyCorrect(anons, champ.start_date);
   if (champ.format === 'points') {
+    const dailyCorrect = await fetchDailyCorrect(anons, champ.start_date);
     return { format: 'points', participants, rows: computePoints(participants, dailyCorrect) };
   }
-  const suddenStreak = await fetchSuddenStreak(anons, champ.theme_slug);
+  const [roundMetric, finalSD, finalTA] = await Promise.all([
+    fetchRoundMetric(anons, champ.round_mode, champ.theme_slug, champ.start_date),
+    fetchBest(anons, 'sudden_death', champ.theme_slug, 'streak'),
+    fetchBest(anons, 'time_attack', champ.theme_slug, 'score'),
+  ]);
   const state = computeKnockout({
     startDate: champ.start_date,
     today: todayUtc(),
     theme: champ.theme_slug,
     participants,
-    dailyCorrect,
-    suddenStreak,
+    roundMetric,
+    finalSD,
+    finalTA,
   });
   return { format: 'knockout', participants, state };
 }

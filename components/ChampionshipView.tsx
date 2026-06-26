@@ -87,9 +87,7 @@ export function ChampionshipView({ id }: { id: string }) {
         </>
       )}
 
-      {view.format === 'knockout' && (
-        <KnockoutBoard champ={champ} view={view} dailyN={dailyN} />
-      )}
+      {view.format === 'knockout' && <KnockoutBoard champ={champ} view={view} />}
     </div>
   );
 }
@@ -97,16 +95,16 @@ export function ChampionshipView({ id }: { id: string }) {
 function KnockoutBoard({
   champ,
   view,
-  dailyN,
 }: {
   champ: Championship;
   view: Extract<View, { format: 'knockout' }>;
-  dailyN: number;
 }) {
   const t = useTranslations('champ');
   const tt = useTranslations('themes');
+  const tm = useTranslations('modes');
   const s = view.state;
   const themeLabel = champ.theme_slug ? (tt(champ.theme_slug as never) as string) : '';
+  const roundUnit = champ.round_mode === 'sudden_death' ? t('streakShort') : 'pts';
 
   return (
     <div className="flex flex-col gap-4">
@@ -131,19 +129,17 @@ function KnockoutBoard({
         </section>
       )}
 
-      {/* final */}
+      {/* final — both modes */}
       {s.final && (
         <section className="rounded-card border-2 border-navy bg-navy p-4 text-paper">
           <h2 className="text-center font-sans font-bold">{t('final')}</h2>
-          <p className="mb-2 text-center text-sm text-paper/80">
-            {t('finalDesc', { theme: themeLabel })}
-          </p>
+          <p className="mb-2 text-center text-sm text-paper/80">{t('finalBoth')}</p>
           <ol>
             {s.final.players.map((p) => (
-              <li key={p.anon} className="flex justify-between px-2 py-1">
+              <li key={p.anon} className="flex items-center justify-between px-2 py-1">
                 <span>{p.nick ?? 'Anon'}</span>
-                <span className="font-mono font-bold">
-                  {p.streak} {t('streakShort')}
+                <span className="font-mono text-sm">
+                  {p.sd} {t('streakShort')} · {p.ta} pts
                 </span>
               </li>
             ))}
@@ -151,12 +147,20 @@ function KnockoutBoard({
           {!s.winner && (
             <p className="mt-1 text-center text-xs text-paper/70">{t('waitingFinal')}</p>
           )}
-          <Link
-            href={`/jogar/sudden_death?theme=${champ.theme_slug}`}
-            className="btn-primary mt-3 w-full text-center"
-          >
-            {t('playFinal')}
-          </Link>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Link
+              href={`/jogar/sudden_death?theme=${champ.theme_slug}`}
+              className="btn-primary text-center text-sm"
+            >
+              {t('playFinalSD')}
+            </Link>
+            <Link
+              href={`/jogar/time_attack?theme=${champ.theme_slug}`}
+              className="btn-ghost text-center text-sm"
+            >
+              {t('playFinalTA')}
+            </Link>
+          </div>
         </section>
       )}
 
@@ -172,8 +176,8 @@ function KnockoutBoard({
                 key={st.anon}
                 rank={i + 1}
                 name={st.nick}
-                value={st.correct}
-                unit={t('correctShort')}
+                value={st.value}
+                unit={roundUnit}
                 dim={r.eliminated?.anon === st.anon}
               />
             ))}
@@ -182,8 +186,11 @@ function KnockoutBoard({
       ))}
 
       {s.phase === 'rounds' && (
-        <Link href={`/d/${dailyN}`} className="btn-primary w-full text-center">
-          {t('playDaily')}
+        <Link
+          href={`/jogar/${champ.round_mode}?theme=${champ.theme_slug}`}
+          className="btn-primary w-full text-center"
+        >
+          {t('playRound')} · {tm(champ.round_mode)}
         </Link>
       )}
     </div>
