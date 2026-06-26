@@ -28,8 +28,10 @@ export async function submitScore(
   const supabase = getSupabase();
   if (!supabase) return { ok: false };
   try {
-    const { data, error } = await supabase.functions.invoke('submit_score', {
-      body: {
+    // Call the SECURITY DEFINER RPC directly — it revalidates the result
+    // server-side and inserts, so no Edge Function is needed.
+    const { data, error } = await supabase.rpc('validate_and_insert_score', {
+      payload: {
         anon_id: getAnonId(),
         nick: nick?.trim() || null,
         mode: result.mode,

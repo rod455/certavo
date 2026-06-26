@@ -365,5 +365,9 @@ begin
 end;
 $$;
 
+-- The function is SECURITY DEFINER and revalidates everything (recomputes the
+-- score, rate-limits), so it is safe to expose to anon as the write gateway —
+-- direct INSERTs into scores stay blocked by RLS. This avoids needing an Edge
+-- Function for submission.
 revoke all on function validate_and_insert_score(jsonb) from public;
-grant execute on function validate_and_insert_score(jsonb) to service_role;
+grant execute on function validate_and_insert_score(jsonb) to anon, authenticated, service_role;
