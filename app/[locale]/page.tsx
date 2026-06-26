@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { Locale } from '@/i18n/routing';
 import { todayUtc, challengeNumberForDate } from '@/lib/daily';
-import { THEMES, dailyEdition } from '@/lib/content';
+import { dailyEdition } from '@/lib/content';
 import { AdSlot } from '@/components/AdSlot';
 import { JsonLd } from '@/components/JsonLd';
 
@@ -17,7 +17,6 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations('home');
   const tm = await getTranslations('modes');
-  const tt = await getTranslations('themes');
   const challenge = challengeNumberForDate(todayUtc());
   const edition = dailyEdition(challenge);
   const editionName = edition.name[locale] ?? edition.name.en;
@@ -62,25 +61,6 @@ export default async function HomePage({
             >
               <div className="font-sans text-lg font-bold">{tm(mode)}</div>
               <p className="mt-1 text-sm text-navy-soft">{tm(`${mode}Desc`)}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Themes — tapping a theme jumps straight into Sudden Death */}
-      <section>
-        <h2 className="mb-3 font-sans text-lg font-bold">{t('chooseTheme')}</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {Object.values(THEMES).map((theme) => (
-            <Link
-              key={theme.slug}
-              href={`/jogar/sudden_death?theme=${theme.slug}`}
-              className="flex items-center gap-3 rounded-card border-2 border-navy/15 bg-paper-2 p-4 shadow-tactile-sm transition-transform hover:-translate-y-[1px]"
-            >
-              <span className="text-2xl" aria-hidden>
-                {theme.icon}
-              </span>
-              <span className="font-sans font-bold">{tt(theme.slug)}</span>
             </Link>
           ))}
         </div>
