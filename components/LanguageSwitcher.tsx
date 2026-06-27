@@ -12,14 +12,18 @@ export function LanguageSwitcher() {
   const router = useRouter();
 
   return (
-    <div className="flex items-center gap-1 font-mono text-xs" role="group" aria-label="Language">
+    <div
+      className="flex items-center gap-0.5 font-mono text-[11px] sm:gap-1 sm:text-xs"
+      role="group"
+      aria-label="Language"
+    >
       {locales.map((l) => (
         <button
           key={l}
           type="button"
           aria-current={l === locale ? 'true' : undefined}
           onClick={() => router.replace(pathname, { locale: l })}
-          className={`rounded px-2 py-1 transition-colors ${
+          className={`rounded px-1.5 py-1 transition-colors sm:px-2 ${
             l === locale
               ? 'bg-navy text-paper'
               : 'text-navy-soft hover:bg-navy/10'

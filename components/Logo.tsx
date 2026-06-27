@@ -56,9 +56,9 @@ export function Wordmark({ className = 'text-xl' }: { className?: string }) {
 /** Monogram + wordmark lockup for the header. */
 export function Logo({ className = '' }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
-      <Monogram className="h-7 w-7" />
-      <Wordmark className="text-lg" />
+    <span className={`inline-flex items-center gap-1.5 sm:gap-2 ${className}`}>
+      <Monogram className="h-6 w-6 sm:h-7 sm:w-7" />
+      <Wordmark className="text-base sm:text-lg" />
     </span>
   );
 }

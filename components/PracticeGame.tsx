@@ -1,8 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { GameMode } from '@/lib/types';
 import { questionsForTheme, type ThemeKey, type Difficulty } from '@/lib/content';
+import { hasPlayedFinal } from '@/lib/anon';
+import { Link } from '@/i18n/routing';
 import { GameBoard } from './GameBoard';
 
 const DECK_SIZE = 40;
@@ -36,5 +39,31 @@ export function PracticeGame({
     [seed, themeSlug, difficulty],
   );
 
+  // The Final is one-shot — if it was already played for this theme, block it.
+  const isFinal = mode === 'final';
+  const [ready, setReady] = useState(!isFinal);
+  const [blocked, setBlocked] = useState(false);
+  useEffect(() => {
+    if (!isFinal) return;
+    setBlocked(hasPlayedFinal(themeSlug));
+    setReady(true);
+  }, [isFinal, themeSlug]);
+
+  if (!ready) return null;
+  if (blocked) return <FinalAlreadyPlayed />;
+
   return <GameBoard mode={mode} deck={deck} themeSlug={themeSlug} />;
+}
+
+function FinalAlreadyPlayed() {
+  const t = useTranslations('result');
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-card border-2 border-navy/15 bg-paper-2 p-8 text-center">
+      <p className="font-sans text-lg font-bold">{t('finalAlready')}</p>
+      <p className="text-sm text-navy-soft">{t('finalOneShot')}</p>
+      <Link href="/grupos" className="btn-primary w-full">
+        {t('backToChampionship')}
+      </Link>
+    </div>
+  );
 }

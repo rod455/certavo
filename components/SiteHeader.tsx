@@ -8,11 +8,11 @@ export async function SiteHeader() {
   const t = await getTranslations('nav');
   return (
     <header className="border-b-2 border-navy/10 bg-paper/80 backdrop-blur">
-      <div className="container-app flex h-14 items-center justify-between">
-        <Link href="/" aria-label="Certavo" className="-ml-0.5">
+      <div className="container-app flex h-14 items-center justify-between gap-2">
+        <Link href="/" aria-label="Certavo" className="-ml-0.5 shrink-0">
           <Logo />
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex min-w-0 items-center gap-2 text-sm sm:gap-4">
           <Link href="/grupos" className="font-medium hover:text-teal">
             {t('groups')}
           </Link>

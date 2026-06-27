@@ -153,7 +153,12 @@
     "rankUnavailable": "Ranking indisponível no momento.",
     "minToRank": "Acerte ao menos 1 para entrar no ranking.",
     "comeBackTomorrow": "Volte amanhã para um novo desafio.",
-    "alreadyPlayed": "Você já jogou o desafio de hoje."
+    "alreadyPlayed": "Você já jogou o desafio de hoje.",
+    "finalResult": "acertos na final",
+    "finalSaved": "Resultado enviado!",
+    "finalOneShot": "A final tem uma tentativa só.",
+    "finalAlready": "Você já jogou a final.",
+    "backToChampionship": "Voltar aos campeonatos"
   },
   "ranking": {
     "title": "Ranking",

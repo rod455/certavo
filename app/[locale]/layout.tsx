@@ -68,7 +68,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={`${schibsted.variable} ${spaceMono.variable}`}>
-      <body className="min-h-dvh font-sans antialiased">
+      <body className="min-h-dvh overflow-x-hidden font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           <SiteHeader />
           <main className="container-app py-6">{children}</main>

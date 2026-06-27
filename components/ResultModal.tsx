@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { GameResult } from '@/lib/types';
 import { whatsappLink, shareOrCopy } from '@/lib/share';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { submitScore, getLeaderboard, type LeaderboardRow } from '@/lib/scores';
-import { getNick, setNick } from '@/lib/anon';
+import { getNick, setNick, markFinalPlayed } from '@/lib/anon';
 import { isBackendConfigured } from '@/lib/supabase/client';
 import { Link } from '@/i18n/routing';
 
@@ -40,6 +40,7 @@ export function ResultModal({
   const locale = useLocale();
   const isDaily = result.mode === 'daily';
   const isStreak = result.mode === 'sudden_death';
+  const isFinal = result.mode === 'final';
 
   const [origin, setOrigin] = useState(SITE_URL);
   useEffect(() => {
@@ -55,16 +56,20 @@ export function ResultModal({
     ? `${result.correctCount}/${result.total}`
     : isStreak
       ? `${result.streak}`
-      : `${result.score}`;
+      : isFinal
+        ? `${result.correctCount}`
+        : `${result.score}`;
   const subLabel = isDaily
     ? (result.challengeName ?? '')
     : isStreak
       ? tc('streak')
-      : `${result.correctCount}/${result.total} · ${formatDuration(result.durationMs)}`;
+      : isFinal
+        ? t('finalResult')
+        : `${result.correctCount}/${result.total} · ${formatDuration(result.durationMs)}`;
   const themeLabel = isDaily
     ? (result.challengeName ?? '')
     : (tt(result.themeSlug as never) as string);
-  const myMetric = isStreak ? result.streak : result.score;
+  const myMetric = isStreak || isFinal ? result.streak : result.score;
 
   // ----- share message + image -----
   let message: string;
@@ -135,9 +140,25 @@ export function ResultModal({
     } else setSaveError(true);
   }
 
-  // Don't rank a zero — no point cluttering the board with 0s.
+  // The Final is a one-shot championship game: submit it automatically (the
+  // player is already identified by their group nick) and lock it so it can't
+  // be replayed. Even a 0 is recorded — the bracket needs to know they played.
+  const autoSubmitted = useRef(false);
+  const [finalSent, setFinalSent] = useState(false);
+  useEffect(() => {
+    if (!isFinal || !showBackend || autoSubmitted.current) return;
+    autoSubmitted.current = true;
+    markFinalPlayed(result.themeSlug);
+    submitScore(result, getNick()).then((res) => {
+      setFinalSent(true);
+      if (res.ok && typeof res.rank === 'number') setRank(res.rank);
+    });
+  }, [isFinal, showBackend, result]);
+
+  // Don't rank a zero — no point cluttering the board with 0s. The Final is
+  // saved automatically, so it never shows the manual nick form.
   const canSave = myMetric > 0;
-  const showSave = allowSave && showBackend && canSave;
+  const showSave = allowSave && showBackend && canSave && !isFinal;
   const top = rows.slice(0, 7);
   const pct =
     rows.length > 0
@@ -197,7 +218,18 @@ export function ResultModal({
             </div>
           ))}
 
-        {allowSave && showBackend && !canSave && (
+        {isFinal && showBackend &&
+          (rank != null ? (
+            <p className="mt-4 font-sans text-lg font-bold text-teal-soft">
+              🏆 {t('rankPosition', { rank })}
+            </p>
+          ) : (
+            <p className="mt-4 font-sans text-sm text-paper/80">
+              {finalSent ? `✓ ${t('finalSaved')}` : t('saving')}
+            </p>
+          ))}
+
+        {allowSave && showBackend && !canSave && !isFinal && (
           <p className="mt-4 font-sans text-sm text-paper/70">
             {t('minToRank')}
           </p>
@@ -251,6 +283,14 @@ export function ResultModal({
           <p className="text-center text-sm text-navy-soft">
             {t('comeBackTomorrow')}
           </p>
+        </div>
+      ) : isFinal ? (
+        // One attempt only — no replay for the Final.
+        <div className="flex flex-col gap-2">
+          <Link href="/grupos" className="btn-primary w-full">
+            {t('backToChampionship')}
+          </Link>
+          <p className="text-center text-sm text-navy-soft">{t('finalOneShot')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
