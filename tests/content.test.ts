@@ -3,6 +3,9 @@ import {
   flagToNameQuestions,
   nameToFlagQuestions,
   worldCupQuestions,
+  worldCupRunnerUpQuestions,
+  worldCupScoreQuestions,
+  worldCupHostQuestions,
   olympicQuestions,
   questionsForTheme,
 } from '@/lib/content';
@@ -12,6 +15,9 @@ const builders = {
   'flag→name': flagToNameQuestions('flags:flags-name'),
   'name→flag': nameToFlagQuestions('flags:name-flag'),
   worldCup: worldCupQuestions('sports:wc'),
+  'worldCup runners-up': worldCupRunnerUpQuestions('worldcup:ru'),
+  'worldCup scores': worldCupScoreQuestions('worldcup:score'),
+  'worldCup hosts': worldCupHostQuestions('worldcup:host'),
   olympics: olympicQuestions('sports:oly'),
 };
 
@@ -48,5 +54,26 @@ describe('content generators', () => {
   it('a new theme = data only: questionsForTheme works generically', () => {
     expect(questionsForTheme('flags').length).toBeGreaterThan(0);
     expect(questionsForTheme('sports').length).toBeGreaterThan(0);
+  });
+
+  it('difficulty is cumulative — harder levels add categories', () => {
+    const easy = questionsForTheme('worldcup', 'easy');
+    const medium = questionsForTheme('worldcup', 'medium');
+    const hard = questionsForTheme('worldcup', 'hard');
+
+    // easy keeps only tier-1 questions; each step strictly grows the pool
+    expect(easy.every((q) => q.difficulty === 1)).toBe(true);
+    expect(medium.length).toBeGreaterThan(easy.length);
+    expect(hard.length).toBeGreaterThan(medium.length);
+    // hard is the only level that includes tier-3 (host countries)
+    expect(hard.some((q) => q.difficulty === 3)).toBe(true);
+    expect(medium.some((q) => q.difficulty === 3)).toBe(false);
+  });
+
+  it('never returns an empty deck even if a tier has no content', () => {
+    // sports only has tier-1 content today → every level still plays
+    for (const lvl of ['easy', 'medium', 'hard'] as const) {
+      expect(questionsForTheme('sports', lvl).length).toBeGreaterThan(0);
+    }
   });
 });

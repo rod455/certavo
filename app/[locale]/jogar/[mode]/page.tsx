@@ -4,7 +4,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { Locale } from '@/i18n/routing';
 import type { GameMode } from '@/lib/types';
-import { type ThemeKey, THEMES } from '@/lib/content';
+import { type ThemeKey, THEMES, DIFFICULTIES, isDifficulty } from '@/lib/content';
 import { PracticeGame } from '@/components/PracticeGame';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -41,7 +41,7 @@ export default async function PlayPage({
   searchParams,
 }: {
   params: { locale: Locale; mode: string };
-  searchParams: { theme?: string };
+  searchParams: { theme?: string; level?: string };
 }) {
   setRequestLocale(locale);
   if (!VALID_MODES.includes(mode as GameMode)) notFound();
@@ -50,11 +50,13 @@ export default async function PlayPage({
   const tt = await getTranslations('themes');
   const th = await getTranslations('home');
   const tc = await getTranslations('common');
+  const tl = await getTranslations('levels');
 
   const chosen: ThemeKey | null =
     searchParams.theme && searchParams.theme in THEMES
       ? (searchParams.theme as ThemeKey)
       : null;
+  const level = isDifficulty(searchParams.level) ? searchParams.level : null;
 
   // Step 2: no theme yet → pick a theme before starting.
   if (!chosen) {
@@ -87,14 +89,53 @@ export default async function PlayPage({
     );
   }
 
-  // Step 3: theme chosen → play (the deck is generated on the client).
+  // Step 3: theme chosen but no level → pick a difficulty.
+  if (!level) {
+    return (
+      <div className="flex flex-col gap-5">
+        <header>
+          <p className="font-mono text-sm uppercase tracking-wide text-navy-soft">
+            {tm(mode)} · {tt(chosen)}
+          </p>
+          <h1 className="font-sans text-2xl font-bold">{tl('choose')}</h1>
+        </header>
+        <div className="flex flex-col gap-3">
+          {DIFFICULTIES.map((lvl) => (
+            <Link
+              key={lvl}
+              href={`/jogar/${mode}?theme=${chosen}&level=${lvl}`}
+              className="rounded-card border-2 border-navy/15 bg-paper-2 p-4 shadow-tactile-sm transition-transform hover:-translate-y-[1px]"
+            >
+              <span className="flex items-center justify-between">
+                <span className="font-sans text-lg font-bold">{tl(lvl)}</span>
+                <span aria-hidden className="font-mono text-sm text-teal">
+                  {'●'.repeat(DIFFICULTIES.indexOf(lvl) + 1)}
+                </span>
+              </span>
+              <span className="mt-1 block text-sm text-navy-soft">{tl(`${lvl}Desc`)}</span>
+            </Link>
+          ))}
+        </div>
+        <Link
+          href={`/jogar/${mode}`}
+          className="text-center text-sm text-navy-soft underline"
+        >
+          ← {tc('back')}
+        </Link>
+      </div>
+    );
+  }
+
+  // Step 4: theme + level chosen → play (the deck is generated on the client).
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-baseline justify-between">
         <h1 className="font-sans text-xl font-bold">{tm(mode)}</h1>
-        <span className="font-mono text-sm text-navy-soft">{tt(chosen)}</span>
+        <span className="font-mono text-sm text-navy-soft">
+          {tt(chosen)} · {tl(level)}
+        </span>
       </header>
-      <PracticeGame mode={mode as GameMode} themeSlug={chosen} />
+      <PracticeGame mode={mode as GameMode} themeSlug={chosen} difficulty={level} />
     </div>
   );
 }

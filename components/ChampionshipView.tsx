@@ -138,7 +138,7 @@ function KnockoutBoard({
             <p className="mt-1 text-center text-xs text-paper/70">{t('waitingFinal')}</p>
           )}
           <Link
-            href={`/jogar/final?theme=${champ.theme_slug}`}
+            href={`/jogar/final?theme=${champ.theme_slug}&level=medium`}
             className="btn-primary mt-3 block w-full text-center"
           >
             {t('playFinal')}
@@ -169,7 +169,7 @@ function KnockoutBoard({
 
       {s.phase === 'rounds' && (
         <Link
-          href={`/jogar/${champ.round_mode}?theme=${champ.theme_slug}`}
+          href={`/jogar/${champ.round_mode}?theme=${champ.theme_slug}&level=medium`}
           className="btn-primary w-full text-center"
         >
           {t('playRound')} · {tm(champ.round_mode)}

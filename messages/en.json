@@ -108,6 +108,15 @@
     "finalDesc": "1 minute, sudden death. One miss ends it — get as many as you can.",
     "dailyShort": "Daily"
   },
+  "levels": {
+    "choose": "Choose a level",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "easyDesc": "The basics — the best-known questions.",
+    "mediumDesc": "More variety and a step up in difficulty.",
+    "hardDesc": "Everything: details and expert-level questions."
+  },
   "themes": {
     "flags": "World Flags",
     "worldcup": "World Cup",

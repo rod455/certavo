@@ -108,6 +108,15 @@
     "finalDesc": "1 minuto e morte súbita. Errou, acabou — acerte o máximo que puder.",
     "dailyShort": "Diário"
   },
+  "levels": {
+    "choose": "Escolha o nível",
+    "easy": "Fácil",
+    "medium": "Médio",
+    "hard": "Difícil",
+    "easyDesc": "O básico — as perguntas mais conhecidas.",
+    "mediumDesc": "Mais variedade e um degrau de dificuldade.",
+    "hardDesc": "Tudo: detalhes e perguntas de especialista."
+  },
   "themes": {
     "flags": "Bandeiras do Mundo",
     "worldcup": "Copa do Mundo",

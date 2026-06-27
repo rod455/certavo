@@ -105,26 +105,58 @@ const WC_PROMPT: Record<Lang, (y: number) => string> = {
   es: (y) => `¿Quién ganó la Copa del Mundo de ${y}?`,
 };
 
+const WC_RUNNERUP_PROMPT: Record<Lang, (y: number) => string> = {
+  pt: (y) => `Quem foi o vice-campeão da Copa do Mundo de ${y}?`,
+  en: (y) => `Who finished runner-up at the ${y} World Cup?`,
+  es: (y) => `¿Quién fue subcampeón del Mundial de ${y}?`,
+};
+
+const WC_SCORE_PROMPT: Record<Lang, (y: number) => string> = {
+  pt: (y) => `Qual foi o placar da final da Copa do Mundo de ${y}?`,
+  en: (y) => `What was the score in the ${y} World Cup final?`,
+  es: (y) => `¿Cuál fue el marcador de la final del Mundial de ${y}?`,
+};
+
+const WC_HOST_PROMPT: Record<Lang, (y: number) => string> = {
+  pt: (y) => `Qual país sediou a Copa do Mundo de ${y}?`,
+  en: (y) => `Which country hosted the ${y} World Cup?`,
+  es: (y) => `¿Qué país fue sede del Mundial de ${y}?`,
+};
+
 const OLY_PROMPT: Record<Lang, (y: number) => string> = {
   pt: (y) => `Qual cidade sediou os Jogos Olímpicos de ${y}?`,
   en: (y) => `Which city hosted the ${y} Olympic Games?`,
   es: (y) => `¿Qué ciudad fue sede de los Juegos Olímpicos de ${y}?`,
 };
 
+type WorldCupFinal = {
+  year: number;
+  champion: string;
+  runnerUp: string;
+  host: string | null;
+  score: string | null;
+};
 type Sports = {
   worldCupChampions: { year: number; code: string }[];
+  worldCupFinals: WorldCupFinal[];
   olympicHosts: { year: number; city: Record<string, string> }[];
 };
 const sports = sportsData as Sports;
 
+/** Pick 3 distractor codes from a pool, deterministically by id. */
+function distractorsFromPool(correct: string, pool: string[], id: string): string[] {
+  return shuffle(
+    [...new Set(pool)].filter((c) => c !== correct),
+    seededRng(id),
+  ).slice(0, 3);
+}
+
+/** Easy — who lifted the trophy. */
 export function worldCupQuestions(packId: string): Question[] {
   const winnerCodes = [...new Set(sports.worldCupChampions.map((w) => w.code))];
   return sports.worldCupChampions.map(({ year, code }) => {
     const id = `wc-${year}`;
-    const distractors = shuffle(
-      winnerCodes.filter((c) => c !== code),
-      seededRng(id),
-    ).slice(0, 3);
+    const distractors = distractorsFromPool(code, winnerCodes, id);
     const { options, correctIndex } = optionsFromCodes(code, distractors, id);
     const prompt: Record<string, string> = {};
     for (const lang of LANGS) prompt[lang] = WC_PROMPT[lang](year);
@@ -136,7 +168,83 @@ export function worldCupQuestions(packId: string): Question[] {
       prompt,
       options,
       correct_index: correctIndex,
+      difficulty: 1,
+    };
+  });
+}
+
+/** Medium — who finished runner-up. */
+export function worldCupRunnerUpQuestions(packId: string): Question[] {
+  const pool = sports.worldCupFinals.flatMap((f) => [f.champion, f.runnerUp]);
+  return sports.worldCupFinals.map((f) => {
+    const id = `wc-ru-${f.year}`;
+    const distractors = distractorsFromPool(f.runnerUp, pool, id);
+    const { options, correctIndex } = optionsFromCodes(f.runnerUp, distractors, id);
+    const prompt: Record<string, string> = {};
+    for (const lang of LANGS) prompt[lang] = WC_RUNNERUP_PROMPT[lang](f.year);
+    return {
+      id,
+      pack_id: packId,
+      media_type: 'none',
+      media_value: null,
+      prompt,
+      options,
+      correct_index: correctIndex,
       difficulty: 2,
+    };
+  });
+}
+
+/** Medium — the historic final scoreline. */
+export function worldCupScoreQuestions(packId: string): Question[] {
+  const list = sports.worldCupFinals.filter((f) => f.score);
+  const pool = [...new Set(list.map((f) => f.score as string))];
+  return list.map((f) => {
+    const score = f.score as string;
+    const id = `wc-score-${f.year}`;
+    const distractors = shuffle(
+      pool.filter((s) => s !== score),
+      seededRng(id),
+    ).slice(0, 3);
+    const ordered = shuffle([score, ...distractors], seededRng(`${id}:order`));
+    const correctIndex = ordered.indexOf(score);
+    const options: Record<string, string[]> = {};
+    for (const lang of LANGS) options[lang] = ordered;
+    const prompt: Record<string, string> = {};
+    for (const lang of LANGS) prompt[lang] = WC_SCORE_PROMPT[lang](f.year);
+    return {
+      id,
+      pack_id: packId,
+      media_type: 'none',
+      media_value: null,
+      prompt,
+      options,
+      correct_index: correctIndex,
+      difficulty: 2,
+    };
+  });
+}
+
+/** Hard — which country hosted that edition. */
+export function worldCupHostQuestions(packId: string): Question[] {
+  const list = sports.worldCupFinals.filter((f) => f.host);
+  const pool = list.map((f) => f.host as string);
+  return list.map((f) => {
+    const host = f.host as string;
+    const id = `wc-host-${f.year}`;
+    const distractors = distractorsFromPool(host, pool, id);
+    const { options, correctIndex } = optionsFromCodes(host, distractors, id);
+    const prompt: Record<string, string> = {};
+    for (const lang of LANGS) prompt[lang] = WC_HOST_PROMPT[lang](f.year);
+    return {
+      id,
+      pack_id: packId,
+      media_type: 'none',
+      media_value: null,
+      prompt,
+      options,
+      correct_index: correctIndex,
+      difficulty: 3,
     };
   });
 }
@@ -168,7 +276,7 @@ export function olympicQuestions(packId: string): Question[] {
       prompt,
       options,
       correct_index: correctIndex,
-      difficulty: 2,
+      difficulty: 1,
     };
   });
 }
@@ -214,6 +322,33 @@ export const THEMES = {
         },
         build: worldCupQuestions,
       },
+      {
+        slug: 'world-cup-runners-up',
+        name: {
+          pt: 'Vices da Copa do Mundo',
+          en: 'World Cup Runners-up',
+          es: 'Subcampeones del Mundial',
+        },
+        build: worldCupRunnerUpQuestions,
+      },
+      {
+        slug: 'world-cup-scores',
+        name: {
+          pt: 'Placares das finais',
+          en: 'Final scorelines',
+          es: 'Marcadores de las finales',
+        },
+        build: worldCupScoreQuestions,
+      },
+      {
+        slug: 'world-cup-hosts',
+        name: {
+          pt: 'Países-sede',
+          en: 'Host countries',
+          es: 'Países anfitriones',
+        },
+        build: worldCupHostQuestions,
+      },
     ],
   },
   sports: {
@@ -236,9 +371,31 @@ export const THEMES = {
 
 export type ThemeKey = keyof typeof THEMES;
 
-/** All questions for a theme (across its packs), with stable ids. */
-export function questionsForTheme(theme: ThemeKey): Question[] {
-  return THEMES[theme].packs.flatMap((p) => p.build(`${theme}:${p.slug}`));
+/**
+ * Difficulty is cumulative: harder levels add whole new categories of
+ * questions on top of the easier ones (e.g. World Cup — easy: champions;
+ * medium: + runners-up + scores; hard: + host countries…). Each question
+ * carries a `difficulty` tier (1/2/3) and a level keeps every tier up to it.
+ */
+export type Difficulty = 'easy' | 'medium' | 'hard';
+export const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
+const MAX_TIER: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
+
+export function isDifficulty(v: string | undefined): v is Difficulty {
+  return v === 'easy' || v === 'medium' || v === 'hard';
+}
+
+/** All questions for a theme at a difficulty (across its packs), stable ids. */
+export function questionsForTheme(
+  theme: ThemeKey,
+  difficulty: Difficulty = 'hard',
+): Question[] {
+  const all = THEMES[theme].packs.flatMap((p) => p.build(`${theme}:${p.slug}`));
+  const max = MAX_TIER[difficulty];
+  const filtered = all.filter((q) => q.difficulty <= max);
+  // Never hand back an empty deck — a theme might not have content at every
+  // tier yet, so fall back to everything available.
+  return filtered.length ? filtered : all;
 }
 
 /** The global daily pool: a curated mix across themes. */
