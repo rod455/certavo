@@ -129,9 +129,9 @@ export default async function PlayPage({
   // Step 4: theme + level chosen → play (the deck is generated on the client).
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex items-baseline justify-between">
+      <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h1 className="font-sans text-xl font-bold">{tm(mode)}</h1>
-        <span className="font-mono text-sm text-navy-soft">
+        <span className="font-mono text-xs text-navy-soft sm:text-sm">
           {tt(chosen)} · {tl(level)}
         </span>
       </header>

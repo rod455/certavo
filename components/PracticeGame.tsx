@@ -39,18 +39,18 @@ export function PracticeGame({
     [seed, themeSlug, difficulty],
   );
 
-  // The Final is one-shot — if it was already played for this theme, block it.
+  // The deck is shuffled with Math.random(), so it differs between the server
+  // and client renders. Render nothing until mounted so the game (and the
+  // Final's one-shot check, which reads localStorage) only ever renders on the
+  // client — no hydration mismatch.
   const isFinal = mode === 'final';
-  const [ready, setReady] = useState(!isFinal);
-  const [blocked, setBlocked] = useState(false);
-  useEffect(() => {
-    if (!isFinal) return;
-    setBlocked(hasPlayedFinal(themeSlug));
-    setReady(true);
-  }, [isFinal, themeSlug]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  if (!ready) return null;
-  if (blocked) return <FinalAlreadyPlayed />;
+  if (!mounted) {
+    return <p className="p-8 text-center font-mono text-navy-soft">…</p>;
+  }
+  if (isFinal && hasPlayedFinal(themeSlug)) return <FinalAlreadyPlayed />;
 
   return <GameBoard mode={mode} deck={deck} themeSlug={themeSlug} />;
 }
