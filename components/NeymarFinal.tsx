@@ -52,6 +52,22 @@ export function NeymarFinal({ path, by }: { path: string; by: string }) {
         </div>
       </header>
 
+      {/* prestige badges — the two biggest 'what ifs' */}
+      {(story.worldCup > 0 || story.ballon > 0) && (
+        <div className="flex flex-wrap justify-center gap-2">
+          {story.worldCup > 0 && (
+            <span className="rounded-full border-2 border-teal bg-teal/15 px-3 py-1.5 font-sans text-sm font-bold text-teal">
+              🏆 {t('worldCup')} 2014
+            </span>
+          )}
+          {story.ballon > 0 && (
+            <span className="rounded-full border-2 border-teal bg-teal/15 px-3 py-1.5 font-sans text-sm font-bold text-teal">
+              🥇 {t('ballon')} ×{story.ballon}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* the story */}
       <ol className="flex flex-col gap-3">
         {story.chapters.map((c, i) => (

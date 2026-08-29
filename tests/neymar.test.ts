@@ -51,6 +51,18 @@ describe('buildNeymarStory', () => {
     expect(s.stats.ucl).toBeGreaterThanOrEqual(5);
     expect(s.stats.goals).toBeGreaterThan(0);
   });
+
+  it('awards the World Cup only when he escapes the 2014 injury', () => {
+    expect(buildNeymarStory('BAABAA').worldCup).toBe(1); // escaped (M2=A)
+    expect(buildNeymarStory('BBABAA').worldCup).toBe(0); // injured (M2=B)
+  });
+
+  it('awards the Ballon d’Or only out of Messi’s shadow with Champions', () => {
+    // Real + stays → protagonist with many UCL → multiple Ballons
+    expect(buildNeymarStory('BAABAA').ballon).toBeGreaterThan(0);
+    // Barça then PSG (no UCL, always in the shadow) → no Ballon
+    expect(buildNeymarStory('ABAABB').ballon).toBe(0);
+  });
 });
 
 describe('linear coherence (club flows through the path)', () => {

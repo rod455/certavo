@@ -96,7 +96,7 @@ export const MOMENTS: Moment[] = [
         real: false,
         hero: true,
         consequence:
-          'Inteiro, Neymar comanda a seleção contra a Alemanha. O 7 a 1 nunca acontece: o Brasil vai à final da sua Copa com ele decisivo.',
+          'Inteiro, Neymar comanda a seleção. O 7 a 1 nunca acontece e o Brasil, com ele decisivo, briga pelo título mundial em casa.',
         chapter:
           'A joelhada de Zúñiga passa perto, mas a vértebra resiste. Inteiro na semifinal, Neymar segura a Alemanha e o fantasma do 7 a 1 nunca nasce — o Brasil chega à final da sua Copa com o camisa 10 no comando.',
         stats: { goals: 3, assists: 2 },
@@ -327,6 +327,8 @@ export type NeymarStory = {
   legado: string[]; // closing sentences
   hero: boolean;
   gold: boolean;
+  worldCup: number; // World Cups won (0/1)
+  ballon: number; // Ballon d'Or count
 };
 
 const TIERS = [
@@ -362,6 +364,18 @@ export function buildNeymarStory(path: string): NeymarStory {
     club = clubAfterMoment(step, key, club);
   });
 
+  // World Cup: escaping the 2014 injury lets a healthy Neymar lead Brazil to
+  // the hexa at home. Ballon d'Or: only when he steps out of Messi's shadow
+  // (goes to Real in 2013, or stays and inherits the Barça) WITH Champions to
+  // show — plus a World Cup is itself a near-guaranteed Ballon.
+  const protagonist = path[0] === 'B' || path[3] === 'B';
+  const worldCup = hero ? 1 : 0;
+  let ballon = 0;
+  if (protagonist) {
+    ballon = stats.ucl >= 3 ? 3 : stats.ucl >= 2 ? 2 : stats.ucl >= 1 ? 1 : 0;
+  }
+  ballon = Math.min(ballon + worldCup, 5);
+
   const score =
     stats.ucl * 4 +
     stats.libertadores * 5 +
@@ -369,6 +383,8 @@ export function buildNeymarStory(path: string): NeymarStory {
     stats.liga * 0.5 +
     (hero ? 10 : 0) +
     (gold ? 8 : 0) +
+    worldCup * 12 +
+    ballon * 6 +
     stats.goals / 50 +
     stats.assists / 50;
 
@@ -377,8 +393,17 @@ export function buildNeymarStory(path: string): NeymarStory {
 
   // Compose the closing legacy from the flags, not just the score.
   const legado: string[] = [];
-  if (hero) {
+  if (worldCup > 0) {
+    legado.push('Inteiro, comandou o Brasil ao HEXA — campeão do mundo em casa, em 2014.');
+  } else if (hero) {
     legado.push('O homem que escapou da lesão e evitou o 7 a 1 — o Brasil nunca esqueceu.');
+  }
+  if (ballon > 0) {
+    legado.push(
+      ballon === 1
+        ? 'Saiu da sombra de Messi e Cristiano e conquistou a Bola de Ouro.'
+        : `Destronou Messi e Cristiano e ergueu ${ballon} Bolas de Ouro.`,
+    );
   }
   if (gold) {
     legado.push('Deu ao Brasil o ouro olímpico que faltava, e se vingou da Alemanha.');
@@ -416,5 +441,7 @@ export function buildNeymarStory(path: string): NeymarStory {
     legado,
     hero,
     gold,
+    worldCup,
+    ballon,
   };
 }
