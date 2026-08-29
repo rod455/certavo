@@ -19,6 +19,54 @@ export async function GET(req: Request) {
   const kind = searchParams.get('kind');
   const locale = searchParams.get('locale') ?? 'pt';
 
+  // ---- Neymar alt-history share card (link preview) ----
+  if (kind === 'neymar') {
+    const label = searchParams.get('title') ?? SITE_NAME;
+    const headline = searchParams.get('h') ?? '';
+    const sub = searchParams.get('sub') ?? '';
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: NAVY,
+            color: PAPER,
+            fontFamily: 'sans-serif',
+            padding: 72,
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ fontSize: 30, color: TEAL, letterSpacing: 2, textTransform: 'uppercase' }}>
+            {label}
+          </div>
+          <div
+            style={{
+              fontSize: headline.length > 20 ? 84 : 104,
+              fontWeight: 800,
+              lineHeight: 1.05,
+              margin: '18px 0',
+              maxWidth: 1000,
+            }}
+          >
+            {headline}
+          </div>
+          {sub ? (
+            <div style={{ fontSize: 28, color: '#B9C4CF', maxWidth: 980 }}>{sub}</div>
+          ) : null}
+          <div style={{ marginTop: 40, fontSize: 26, color: '#8A98A6' }}>
+            {SITE_NAME} · {SHARE_HOST}
+          </div>
+        </div>
+      ),
+      { width: 1200, height: 630 },
+    );
+  }
+
   // ---- Shareable result card (sent as an image on WhatsApp) ----
   if (kind === 'result') {
     const title = searchParams.get('title') ?? SITE_NAME;

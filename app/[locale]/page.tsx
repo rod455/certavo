@@ -17,6 +17,7 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations('home');
   const tm = await getTranslations('modes');
+  const tn = await getTranslations('neymar');
   const challenge = challengeNumberForDate(todayUtc());
   const edition = dailyEdition(challenge);
   const editionName = edition.name[locale] ?? edition.name.en;
@@ -46,6 +47,20 @@ export default async function HomePage({
             {t('playDaily')} →
           </div>
           <p className="mt-1 text-sm opacity-90">{t('dailyDesc')}</p>
+        </Link>
+      </section>
+
+      {/* Featured: Neymar alt-history chain (viral, play with friends) */}
+      <section>
+        <Link
+          href="/neymar"
+          className="block rounded-card border-2 border-navy bg-navy p-5 text-paper shadow-tactile transition-transform active:translate-y-[2px] active:shadow-none"
+        >
+          <div className="flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-teal-soft">
+            <span aria-hidden>⚽</span> {tn('storyTitle')}
+          </div>
+          <div className="mt-1 font-sans text-xl font-bold">{tn('title')} →</div>
+          <p className="mt-1 text-sm text-paper/80">{tn('subtitle')}</p>
         </Link>
       </section>
 
