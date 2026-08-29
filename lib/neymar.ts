@@ -74,7 +74,7 @@ export const MOMENTS: Moment[] = [
         choice: 'Vai para o Real Madrid',
         real: false,
         consequence:
-          'No Real, forma um quarteto com Cristiano e Benzema. Estimativa: dominância total na Europa, 5 Champions na década.',
+          'No Real, forma um trio com Cristiano e Benzema. Estimativa: dominância total na Europa, 5 Champions na década.',
         chapter:
           'Rejeitou o Barça e vestiu o branco do Real Madrid, decidido a destronar Cristiano na casa dele. Virou o dono da década merengue.',
         stats: { ucl: 5, liga: 3, goals: 165, assists: 100 },
