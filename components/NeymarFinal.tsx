@@ -57,7 +57,8 @@ export function NeymarFinal({ path, by }: { path: string; by: string }) {
         <div className="flex flex-wrap justify-center gap-2">
           {story.worldCup > 0 && (
             <span className="rounded-full border-2 border-teal bg-teal/15 px-3 py-1.5 font-sans text-sm font-bold text-teal">
-              🏆 {t('worldCup')} 2014
+              🏆 {t('worldCup')}
+              {story.worldCup > 1 ? ` ×${story.worldCup}` : ''}
             </span>
           )}
           {story.ballon > 0 && (

@@ -96,7 +96,7 @@ export const MOMENTS: Moment[] = [
         real: false,
         hero: true,
         consequence:
-          'Inteiro, Neymar comanda a seleção. O 7 a 1 nunca acontece e o Brasil, com ele decisivo, briga pelo título mundial em casa.',
+          'Inteiro, Neymar comanda a seleção contra a Alemanha. O 7 a 1 nunca acontece: o Brasil cai lutando, de cabeça erguida, sem o trauma histórico.',
         chapter:
           'A joelhada de Zúñiga passa perto, mas a vértebra resiste. Inteiro na semifinal, Neymar segura a Alemanha e o fantasma do 7 a 1 nunca nasce — o Brasil chega à final da sua Copa com o camisa 10 no comando.',
         stats: { goals: 3, assists: 2 },
@@ -168,9 +168,9 @@ export const MOMENTS: Moment[] = [
         choice: 'Recusa e fica no {club} para ser o dono absoluto',
         real: false,
         consequence:
-          'Recusa os 222 milhões e fica no {club}, decidido a ser o líder máximo do time. Estimativa: assume de vez o posto de melhor do mundo e reina na Europa.',
+          'Recusa os 222 milhões e fica no {club}. Longe do desgaste de Paris, chega inteiro em 2018, passa pela Bélgica e leva o Brasil ao título mundial.',
         chapter:
-          'Recusou os 222 milhões e ficou no {club}. Assumiu o time e o manto de melhor do mundo — provando que não precisava trocar de casa para ser o maior.',
+          'Recusou os 222 milhões e ficou no {club}. Livre do desgaste de Paris, chegou inteiro à Copa de 2018: passou pela Bélgica, venceu a semi e a final e devolveu ao Brasil o título mundial — o manto de melhor do planeta enfim era dele.',
         stats: { ucl: 2, liga: 3, goals: 170, assists: 90 },
       },
     ],
@@ -364,12 +364,16 @@ export function buildNeymarStory(path: string): NeymarStory {
     club = clubAfterMoment(step, key, club);
   });
 
-  // World Cup: escaping the 2014 injury lets a healthy Neymar lead Brazil to
-  // the hexa at home. Ballon d'Or: only when he steps out of Messi's shadow
-  // (goes to Real in 2013, or stays and inherits the Barça) WITH Champions to
-  // show — plus a World Cup is itself a near-guaranteed Ballon.
-  const protagonist = path[0] === 'B' || path[3] === 'B';
-  const worldCup = hero ? 1 : 0;
+  // World Cup: staying at his club instead of PSG keeps Neymar fresh and
+  // focused — he leads Brazil past Belgium and wins the 2018 title. (Escaping
+  // the 2014 injury only avoids the 7x1; Brazil had no real title chance there.)
+  const stayed = path[3] === 'B';
+  const worldCup = stayed ? 1 : 0;
+
+  // Ballon d'Or: only when he steps out of Messi's shadow (Real in 2013, or
+  // stays and inherits the Barça) WITH Champions to show — and a World Cup is
+  // itself a near-guaranteed Ballon.
+  const protagonist = path[0] === 'B' || stayed;
   let ballon = 0;
   if (protagonist) {
     ballon = stats.ucl >= 3 ? 3 : stats.ucl >= 2 ? 2 : stats.ucl >= 1 ? 1 : 0;
@@ -393,10 +397,11 @@ export function buildNeymarStory(path: string): NeymarStory {
 
   // Compose the closing legacy from the flags, not just the score.
   const legado: string[] = [];
+  if (hero) {
+    legado.push('Escapou da lesão e evitou o 7 a 1: o Brasil caiu de pé, e o trauma nunca existiu.');
+  }
   if (worldCup > 0) {
-    legado.push('Inteiro, comandou o Brasil ao HEXA — campeão do mundo em casa, em 2014.');
-  } else if (hero) {
-    legado.push('O homem que escapou da lesão e evitou o 7 a 1 — o Brasil nunca esqueceu.');
+    legado.push('Livre do desgaste de Paris, liderou o Brasil sobre a Bélgica e foi campeão do mundo em 2018.');
   }
   if (ballon > 0) {
     legado.push(

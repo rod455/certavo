@@ -52,9 +52,10 @@ describe('buildNeymarStory', () => {
     expect(s.stats.goals).toBeGreaterThan(0);
   });
 
-  it('awards the World Cup only when he escapes the 2014 injury', () => {
-    expect(buildNeymarStory('BAABAA').worldCup).toBe(1); // escaped (M2=A)
-    expect(buildNeymarStory('BBABAA').worldCup).toBe(0); // injured (M2=B)
+  it('awards the World Cup only via 2018 (staying instead of PSG)', () => {
+    expect(buildNeymarStory('AAAAAA').worldCup).toBe(0); // PSG (M4=A), no title
+    expect(buildNeymarStory('ABABAA').worldCup).toBe(1); // stays (M4=B) → 2018
+    expect(buildNeymarStory('AAABAA').worldCup).toBe(1); // stays → 2018 (no 2014 title)
   });
 
   it('awards the Ballon d’Or only out of Messi’s shadow with Champions', () => {
