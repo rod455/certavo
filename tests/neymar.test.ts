@@ -4,7 +4,10 @@ import {
   TOTAL_MOMENTS,
   isValidPath,
   buildNeymarStory,
+  resolveMoment,
 } from '@/lib/neymar';
+
+const full = (s: 'A' | 'B') => s.repeat(TOTAL_MOMENTS);
 
 describe('neymar momentos', () => {
   it('every momento has exactly two options A/B', () => {
@@ -26,26 +29,44 @@ describe('neymar momentos', () => {
 
 describe('buildNeymarStory', () => {
   it('produces one chapter per answer and a full ending', () => {
-    const s = buildNeymarStory('AAAAA');
+    const s = buildNeymarStory(full('A'));
     expect(s.chapters).toHaveLength(TOTAL_MOMENTS);
     expect(s.summary).toHaveLength(TOTAL_MOMENTS);
     expect(s.legado.length).toBeGreaterThan(0);
     expect(s.title).toBeTruthy();
   });
 
-  it('the glory path (max titles) ranks higher than the money path', () => {
-    // AAAAA = Barça, plays 2014 (hero), keeps Bruna, PSG, back to Santos
-    const glory = buildNeymarStory('AAAAA');
-    // A-B-B-A-B ≈ reality (no hero, PSG + Arabia money)
-    const reality = buildNeymarStory('ABBAB');
+  it('the glory path ranks higher than the real/money path', () => {
+    // Real, escapes injury (hero), Olympics gold, stays (2 UCL), stability, Santos
+    const glory = buildNeymarStory('BAABAA');
+    // Barça, injured (7x1), Olympics, PSG (no UCL), single life, Arabia (money)
+    const reality = buildNeymarStory('ABAABB');
     expect(glory.tier).toBeGreaterThan(reality.tier);
     expect(glory.hero).toBe(true);
     expect(reality.hero).toBe(false);
   });
 
   it('accumulates stats across the chosen options', () => {
-    const s = buildNeymarStory('BAABA'); // Real (5 UCL) + ...
+    const s = buildNeymarStory('BAABAA'); // Real (3 UCL) + stay (2 UCL)
     expect(s.stats.ucl).toBeGreaterThanOrEqual(5);
     expect(s.stats.goals).toBeGreaterThan(0);
+  });
+});
+
+describe('linear coherence (club flows through the path)', () => {
+  it('2017 asks about leaving whichever club the 2013 answer set', () => {
+    const barca = resolveMoment(3, 'ABA'); // went to Barça in 2013
+    const real = resolveMoment(3, 'BBA'); // went to Real in 2013
+    expect(barca?.prompt).toContain('Barcelona');
+    expect(real?.prompt).toContain('Real Madrid');
+    // the "stay" option names the right club
+    expect(barca?.options[1].choice).toContain('Barcelona');
+    expect(real?.options[1].choice).toContain('Real Madrid');
+  });
+
+  it('a Real-Madrid path never mentions staying at Barça', () => {
+    const story = buildNeymarStory('BAABAA'); // Real, then stays
+    expect(story.chapters.join(' ')).toContain('Real Madrid');
+    expect(story.chapters.join(' ')).not.toContain('ficou no Barcelona');
   });
 });

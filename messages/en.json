@@ -179,8 +179,8 @@
   },
   "neymar": {
     "title": "O Caminho do Neymar",
-    "subtitle": "Uma linha do tempo alternativa da vida do Neymar — 5 decisões, 5 amigos, 1 história.",
-    "howItWorks": "Como funciona: você responde 1 momento e passa o link pra um amigo responder o próximo. Quando os 5 forem respondidos, a história alternativa do Neymar é revelada.",
+    "subtitle": "Uma linha do tempo alternativa da carreira do Neymar — cada amigo decide um momento.",
+    "howItWorks": "Como funciona: você responde 1 momento e passa o link pra um amigo responder o próximo. Quando todos os momentos forem respondidos, a história alternativa do Neymar é revelada.",
     "namePlaceholder": "Seu nome",
     "start": "Começar a corrente",
     "questionOf": "Momento {n} de {total}",

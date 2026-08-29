@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { whatsappLink } from '@/lib/share';
 import { SITE_URL } from '@/lib/site';
-import { MOMENTS, TOTAL_MOMENTS, type MomentOption } from '@/lib/neymar';
+import { resolveMoment, TOTAL_MOMENTS, type ResolvedOption } from '@/lib/neymar';
 
 export function NeymarChain({
   step,
@@ -18,14 +18,14 @@ export function NeymarChain({
 }) {
   const t = useTranslations('neymar');
   const locale = useLocale();
-  const moment = MOMENTS[step - 1];
+  const moment = resolveMoment(step - 1, path);
 
   const [origin, setOrigin] = useState(SITE_URL);
   useEffect(() => {
     if (typeof window !== 'undefined') setOrigin(window.location.origin);
   }, []);
 
-  const [chosen, setChosen] = useState<MomentOption | null>(null);
+  const [chosen, setChosen] = useState<ResolvedOption | null>(null);
   if (!moment) return null;
 
   const byQ = by ? `&by=${encodeURIComponent(by)}` : '';
