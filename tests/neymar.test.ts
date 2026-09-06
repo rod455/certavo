@@ -7,79 +7,66 @@ import {
   resolveMoment,
 } from '@/lib/neymar';
 
-const full = (s: 'A' | 'B') => s.repeat(TOTAL_MOMENTS);
-
 describe('neymar momentos', () => {
-  it('every momento has exactly two options A/B', () => {
-    for (const m of MOMENTS) {
-      expect(m.options).toHaveLength(2);
-      expect(m.options.map((o) => o.key).sort()).toEqual(['A', 'B']);
-      expect(m.options.filter((o) => o.real)).toHaveLength(1); // exactly one real path
-    }
+  it('has 6 momentos and a 3-option opening', () => {
+    expect(MOMENTS).toHaveLength(TOTAL_MOMENTS);
+    const m0 = resolveMoment(0, '')!;
+    expect(m0.options.length).toBe(3);
+    expect(m0.options.map((o) => o.label)).toContain('Manchester City');
+    expect(m0.options.map((o) => o.key)).toEqual(['A', 'B', 'C']);
   });
 
-  it('validates answer paths against the momento keys', () => {
+  it('validates paths against the (context-aware) options', () => {
     expect(isValidPath('')).toBe(true);
-    expect(isValidPath('AB')).toBe(true);
-    expect(isValidPath('AABBA')).toBe(true);
-    expect(isValidPath('C')).toBe(false); // not a real key
+    expect(isValidPath('C')).toBe(true); // 3rd opening option exists
+    expect(isValidPath('AAAAAA')).toBe(true);
+    expect(isValidPath('Z')).toBe(false); // no such key
     expect(isValidPath('A'.repeat(TOTAL_MOMENTS + 1))).toBe(false); // too long
+  });
+});
+
+describe('linear coherence (2017 adapts to the club)', () => {
+  it('after the Real, 2017 is about the Real — never the Barça', () => {
+    const real = resolveMoment(3, 'BBA'); // 2013 Real, then 2014, 2016
+    expect(real?.prompt).toContain('Real Madrid');
+    const choices = real!.options.map((o) => o.choice).join(' | ');
+    expect(choices).toContain('fica no Real Madrid');
+    expect(choices).not.toContain('Vai pro Real Madrid'); // already there
+    expect(choices).not.toContain('Barcelona');
+  });
+
+  it('after the Barça, 2017 offers to stay at the Barça (+ PSG/City/Real)', () => {
+    const barca = resolveMoment(3, 'ABA');
+    expect(barca?.prompt).toContain('Barcelona');
+    const labels = barca!.options.map((o) => o.label);
+    expect(labels).toContain('Manchester City');
+    expect(labels).toContain('Real Madrid');
   });
 });
 
 describe('buildNeymarStory', () => {
   it('produces one chapter per answer and a full ending', () => {
-    const s = buildNeymarStory(full('A'));
+    const s = buildNeymarStory('A'.repeat(TOTAL_MOMENTS));
     expect(s.chapters).toHaveLength(TOTAL_MOMENTS);
     expect(s.summary).toHaveLength(TOTAL_MOMENTS);
-    expect(s.legado.length).toBeGreaterThan(0);
     expect(s.title).toBeTruthy();
   });
 
-  it('the glory path ranks higher than the real/money path', () => {
-    // Real, escapes injury (hero), Olympics gold, stays (2 UCL), stability, Santos
-    const glory = buildNeymarStory('BAABAA');
-    // Barça, injured (7x1), Olympics, PSG (no UCL), single life, Arabia (money)
-    const reality = buildNeymarStory('ABAABB');
-    expect(glory.tier).toBeGreaterThan(reality.tier);
-    expect(glory.hero).toBe(true);
-    expect(reality.hero).toBe(false);
+  it('World Cup comes from staying (fresh), not from PSG', () => {
+    expect(buildNeymarStory('AAAAAA').worldCup).toBe(1); // 2017=A=stay
+    expect(buildNeymarStory('AAABAA').worldCup).toBe(0); // 2017=B=PSG
   });
 
-  it('accumulates stats across the chosen options', () => {
-    const s = buildNeymarStory('BAABAA'); // Real (3 UCL) + stay (2 UCL)
-    expect(s.stats.ucl).toBeGreaterThanOrEqual(5);
-    expect(s.stats.goals).toBeGreaterThan(0);
+  it("Ballon d'Or needs protagonism + Champions", () => {
+    // Real (out of shadow) then stay → many UCL → multiple Ballons
+    expect(buildNeymarStory('BAAAAA').ballon).toBeGreaterThan(0);
+    // Barça then PSG (always in the shadow, no UCL) → none
+    expect(buildNeymarStory('AAABAB').ballon).toBe(0);
   });
 
-  it('awards the World Cup only via 2018 (staying instead of PSG)', () => {
-    expect(buildNeymarStory('AAAAAA').worldCup).toBe(0); // PSG (M4=A), no title
-    expect(buildNeymarStory('ABABAA').worldCup).toBe(1); // stays (M4=B) → 2018
-    expect(buildNeymarStory('AAABAA').worldCup).toBe(1); // stays → 2018 (no 2014 title)
-  });
-
-  it('awards the Ballon d’Or only out of Messi’s shadow with Champions', () => {
-    // Real + stays → protagonist with many UCL → multiple Ballons
-    expect(buildNeymarStory('BAABAA').ballon).toBeGreaterThan(0);
-    // Barça then PSG (no UCL, always in the shadow) → no Ballon
-    expect(buildNeymarStory('ABAABB').ballon).toBe(0);
-  });
-});
-
-describe('linear coherence (club flows through the path)', () => {
-  it('2017 asks about leaving whichever club the 2013 answer set', () => {
-    const barca = resolveMoment(3, 'ABA'); // went to Barça in 2013
-    const real = resolveMoment(3, 'BBA'); // went to Real in 2013
-    expect(barca?.prompt).toContain('Barcelona');
-    expect(real?.prompt).toContain('Real Madrid');
-    // the "stay" option names the right club
-    expect(barca?.options[1].choice).toContain('Barcelona');
-    expect(real?.options[1].choice).toContain('Real Madrid');
-  });
-
-  it('a Real-Madrid path never mentions staying at Barça', () => {
-    const story = buildNeymarStory('BAABAA'); // Real, then stays
-    expect(story.chapters.join(' ')).toContain('Real Madrid');
-    expect(story.chapters.join(' ')).not.toContain('ficou no Barcelona');
+  it('numbers are anchored in reality (Barça real ≈ 103 goals base)', () => {
+    // opening at Barça adds his real all-comps output
+    const s = buildNeymarStory('ABABAB');
+    expect(s.stats.goals).toBeGreaterThanOrEqual(103);
   });
 });
