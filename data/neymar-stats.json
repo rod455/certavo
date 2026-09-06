@@ -1,0 +1,89 @@
+{
+  "player": "Neymar da Silva Santos Júnior",
+  "born": "1992-02-05",
+  "note": "Números por TODAS as competições, aproximados — confira/edite com a tabela da Wikipedia.",
+  "clubs": [
+    {
+      "club": "Santos",
+      "from": 2009,
+      "to": 2013,
+      "apps": 225,
+      "goals": 136,
+      "assists": null,
+      "titles": [
+        "Copa Libertadores 2011",
+        "Copa do Brasil 2010",
+        "Recopa Sul-Americana 2012",
+        "Campeonato Paulista 2010, 2011, 2012"
+      ]
+    },
+    {
+      "club": "Barcelona",
+      "from": 2013,
+      "to": 2017,
+      "apps": 186,
+      "goals": 105,
+      "assists": 76,
+      "titles": [
+        "Liga dos Campeões 2015",
+        "La Liga 2014–15, 2015–16",
+        "Copa do Rei 2015, 2016, 2017",
+        "Mundial de Clubes 2015",
+        "Supercopa da UEFA 2015"
+      ]
+    },
+    {
+      "club": "Paris Saint-Germain",
+      "from": 2017,
+      "to": 2023,
+      "apps": 173,
+      "goals": 118,
+      "assists": 77,
+      "titles": [
+        "Ligue 1 2018, 2019, 2020, 2022, 2023",
+        "Copa da França 2018, 2020, 2021",
+        "Vice da Liga dos Campeões 2020"
+      ]
+    },
+    {
+      "club": "Al-Hilal",
+      "from": 2023,
+      "to": 2025,
+      "apps": 7,
+      "goals": 1,
+      "assists": 2,
+      "titles": ["Campeonato Saudita 2023–24"]
+    },
+    {
+      "club": "Santos",
+      "from": 2025,
+      "to": null,
+      "apps": 7,
+      "goals": 3,
+      "assists": 3,
+      "titles": []
+    }
+  ],
+  "international": {
+    "team": "Brasil",
+    "caps": 128,
+    "goals": 79,
+    "note": "Maior artilheiro da história da Seleção (passou os 77 de Pelé em 2023).",
+    "titles": [
+      "Ouro Olímpico 2016",
+      "Copa das Confederações 2013",
+      "Vice da Copa América 2021"
+    ]
+  },
+  "individual": [
+    "Prêmio Puskás 2011 (gol mais bonito do ano)",
+    "Rei da América (melhor da América do Sul) 2011 e 2012",
+    "Bola de Ouro da Copa das Confederações 2013"
+  ],
+  "facts": [
+    "O trio MSN (Messi, Suárez, Neymar) marcou 122 gols em 2014/15 — recorde de um ataque na Espanha.",
+    "Sua ida ao PSG em 2017 (€222 milhões) é a maior transferência da história do futebol.",
+    "Na Olimpíada de 2016 fez o gol mais rápido da história dos Jogos (~15s) e converteu o pênalti do ouro contra a Alemanha.",
+    "É o maior artilheiro da história da Seleção Brasileira, com 79 gols."
+  ]
+}

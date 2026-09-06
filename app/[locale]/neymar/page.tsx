@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n/routing';
 import { NeymarIntro } from '@/components/NeymarIntro';
+import { NeymarStats } from '@/components/NeymarStats';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 export async function generateMetadata({
@@ -30,5 +31,10 @@ export default function NeymarIntroPage({
   params: { locale: Locale };
 }) {
   setRequestLocale(locale);
-  return <NeymarIntro />;
+  return (
+    <div className="flex flex-col gap-5">
+      <NeymarIntro />
+      <NeymarStats />
+    </div>
+  );
 }
