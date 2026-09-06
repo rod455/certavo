@@ -1,7 +1,7 @@
 {
   "player": "Neymar da Silva Santos Júnior",
   "born": "1992-02-05",
-  "note": "Números por TODAS as competições, aproximados — confira/edite com a tabela da Wikipedia.",
+  "note": "Clubes: números por TODAS as competições (fonte: FBref). Santos 2009–2013 é anterior à cobertura do FBref (estimativa). Seleção: fonte pública.",
   "clubs": [
     {
       "club": "Santos",
@@ -21,9 +21,9 @@
       "club": "Barcelona",
       "from": 2013,
       "to": 2017,
-      "apps": 186,
-      "goals": 105,
-      "assists": 76,
+      "apps": 180,
+      "goals": 103,
+      "assists": 56,
       "titles": [
         "Liga dos Campeões 2015",
         "La Liga 2014–15, 2015–16",
@@ -38,7 +38,7 @@
       "to": 2023,
       "apps": 173,
       "goals": 118,
-      "assists": 77,
+      "assists": 69,
       "titles": [
         "Ligue 1 2018, 2019, 2020, 2022, 2023",
         "Copa da França 2018, 2020, 2021",
@@ -49,8 +49,8 @@
       "club": "Al-Hilal",
       "from": 2023,
       "to": 2025,
-      "apps": 7,
-      "goals": 1,
+      "apps": 3,
+      "goals": 0,
       "assists": 2,
       "titles": ["Campeonato Saudita 2023–24"]
     },
@@ -58,9 +58,9 @@
       "club": "Santos",
       "from": 2025,
       "to": null,
-      "apps": 7,
-      "goals": 3,
-      "assists": 3,
+      "apps": 37,
+      "goals": 16,
+      "assists": 6,
       "titles": []
     }
   ],
@@ -76,14 +76,17 @@
     ]
   },
   "individual": [
+    "Melhor jogador da Ligue 1 2017–18",
     "Prêmio Puskás 2011 (gol mais bonito do ano)",
-    "Rei da América (melhor da América do Sul) 2011 e 2012",
-    "Bola de Ouro da Copa das Confederações 2013"
+    "Rei da América 2011 e 2012",
+    "Bola de Ouro da Copa das Confederações 2013",
+    "2x Seleção do Ano da FIFA (FIFPro World XI)"
   ],
   "facts": [
     "O trio MSN (Messi, Suárez, Neymar) marcou 122 gols em 2014/15 — recorde de um ataque na Espanha.",
     "Sua ida ao PSG em 2017 (€222 milhões) é a maior transferência da história do futebol.",
+    "Sua melhor temporada foi 2017/18 no PSG: 1,61 gol+assistência por 90 min, eleito o melhor da Ligue 1.",
     "Na Olimpíada de 2016 fez o gol mais rápido da história dos Jogos (~15s) e converteu o pênalti do ouro contra a Alemanha.",
-    "É o maior artilheiro da história da Seleção Brasileira, com 79 gols."
+    "Carreira em clubes (Barça + PSG + Al-Hilal + Santos 2025+): 237 gols e 133 assistências em 393 jogos."
   ]
 }
