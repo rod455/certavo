@@ -12,6 +12,7 @@ import {
   emojiChar,
   scoreCut,
   svgPath,
+  tintFor,
   type CutScore,
 } from '@/lib/cutle';
 
@@ -115,6 +116,11 @@ export function CutleGame() {
         if (ar > 1) h = box / ar;
         else w = box * ar;
         ctx.drawImage(img, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+        // flatten to a single-colour silhouette (keep the shape's alpha)
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.fillStyle = tintFor(cp);
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        ctx.globalCompositeOperation = 'source-over';
         const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
         const mask = new Uint8Array(SIZE * SIZE);
         let total = 0;
@@ -311,25 +317,37 @@ export function CutleGame() {
               y1={result.ref[0].y}
               x2={result.ref[1].x}
               y2={result.ref[1].y}
-              stroke="rgb(var(--error))"
-              strokeWidth={2.5}
+              stroke="#FACC15"
+              strokeWidth={3}
               strokeDasharray="7 6"
+              style={{ filter: 'drop-shadow(0 0 1px rgba(0,0,0,.6))' }}
             />
           )}
           {drawn && (
             <>
+              {/* dark outline under the cut, so it reads on any silhouette colour */}
               <line
                 x1={drawn[0].x}
                 y1={drawn[0].y}
                 x2={drawn[1].x}
                 y2={drawn[1].y}
-                stroke="rgb(var(--teal))"
+                stroke="rgba(0,0,0,.55)"
+                strokeWidth={6}
+                strokeLinecap="round"
+              />
+              <line
+                x1={drawn[0].x}
+                y1={drawn[0].y}
+                x2={drawn[1].x}
+                y2={drawn[1].y}
+                stroke="#ffffff"
                 strokeWidth={3}
+                strokeLinecap="round"
               />
               {shown && (
                 <>
-                  <circle cx={shown.a.x * SIZE} cy={shown.a.y * SIZE} r={7} fill="rgb(var(--teal))" />
-                  <circle cx={shown.b.x * SIZE} cy={shown.b.y * SIZE} r={7} fill="rgb(var(--teal))" />
+                  <circle cx={shown.a.x * SIZE} cy={shown.a.y * SIZE} r={7} fill="#ffffff" stroke="rgba(0,0,0,.55)" strokeWidth={2} />
+                  <circle cx={shown.b.x * SIZE} cy={shown.b.y * SIZE} r={7} fill="#ffffff" stroke="rgba(0,0,0,.55)" strokeWidth={2} />
                 </>
               )}
             </>
@@ -361,7 +379,7 @@ export function CutleGame() {
               </p>
               <p className="mt-2 text-sm text-paper/80">
                 Você cortou <b>{result.leftPct}%</b> · <b>{result.rightPct}%</b>. A linha
-                vermelha é o corte perfeito nesse ângulo.
+                amarela é o corte perfeito nesse ângulo.
               </p>
             </div>
             <button

@@ -25,6 +25,28 @@ export function dailyIndex(challengeNumber: number): number {
   return (((challengeNumber - 1) % TOTAL) + TOTAL) % TOTAL;
 }
 
+/**
+ * Each figure is shown as a flat single-color silhouette (no multicolor cues) —
+ * the colour is picked deterministically per emoji so it's stable and varied.
+ */
+export const PALETTE = [
+  '#1E94AB', // teal
+  '#1C2B3A', // navy
+  '#C0492F', // rust
+  '#3F7E4E', // green
+  '#7A5AA6', // purple
+  '#B7791F', // amber
+  '#4A6B8A', // steel blue
+  '#B23A6E', // magenta
+  '#4B5563', // gray
+] as const;
+
+export function tintFor(cp: string): string {
+  let h = 0;
+  for (let i = 0; i < cp.length; i++) h = (h * 31 + cp.charCodeAt(i)) >>> 0;
+  return PALETTE[h % PALETTE.length];
+}
+
 export type CutScore = {
   leftPct: number;
   rightPct: number;
