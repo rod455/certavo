@@ -66,21 +66,6 @@ export default async function HomePage({
         </Link>
       </section>
 
-      {/* Featured: Mapa do Poder (money-map of Brazil) */}
-      <section>
-        <Link
-          href="/mapa"
-          className="block rounded-card border-2 border-navy bg-navy p-5 text-paper shadow-tactile transition-transform active:translate-y-[2px] active:shadow-none"
-        >
-          <div className="flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-teal-soft">
-            <span aria-hidden>🗺️</span> Mapa do Poder
-          </div>
-          <div className="mt-1 font-sans text-xl font-bold">Domine o mapa do Brasil →</div>
-          <p className="mt-1 text-sm text-paper/80">
-            Pague um PIX pro seu candidato dominar cada cidade. O mapa é feito de dinheiro.
-          </p>
-        </Link>
-      </section>
 
       {/* Featured: Neymar alt-history chain (viral, play with friends) */}
       <section>
