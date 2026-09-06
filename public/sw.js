@@ -1,7 +1,7 @@
 /* Certavo service worker — minimal offline shell cache.
  * Network-first for navigations (always fresh app/code), cache-first only for
  * hashed static assets. Bump CACHE to invalidate everything. */
-const CACHE = 'certavo-v4';
+const CACHE = 'certavo-v5';
 const SHELL = ['/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -42,7 +42,8 @@ self.addEventListener('fetch', (event) => {
   const immutable =
     url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/flags/') ||
-    url.pathname.startsWith('/data/');
+    url.pathname.startsWith('/data/') ||
+    url.pathname.startsWith('/cutle/');
 
   if (immutable) {
     event.respondWith(

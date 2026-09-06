@@ -50,6 +50,22 @@ export default async function HomePage({
         </Link>
       </section>
 
+      {/* Featured: Cutle (daily cut-in-half game) */}
+      <section>
+        <Link
+          href="/cutle"
+          className="block rounded-card border-2 border-navy bg-paper-2 p-5 shadow-tactile-sm transition-transform hover:-translate-y-[1px]"
+        >
+          <div className="flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-navy-soft">
+            <span aria-hidden>🔪</span> Cutle
+          </div>
+          <div className="mt-1 font-sans text-xl font-bold">Corte a figura no meio →</div>
+          <p className="mt-1 text-sm text-navy-soft">
+            Divida a imagem em duas metades de área igual. Um desafio novo por dia.
+          </p>
+        </Link>
+      </section>
+
       {/* Featured: Mapa do Poder (money-map of Brazil) */}
       <section>
         <Link
